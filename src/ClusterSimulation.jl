@@ -27,6 +27,7 @@ function sample(p::clPopulation, Ng::Int)
     N = p.G * Ng
     allc = Vector{Float64}(undef, N)
     allc = simulateCluster.(p.mu,Ng, p.β)
+    sample = clSample(allc, N)
 end
 
 function simulateCluster(mu_g::Float64, Ng::Int64, β::Float64)
@@ -51,9 +52,35 @@ function bols(c::clCluster)
 end
 
 function bols(s::clSample)
-    bols.(s.allclusters)
+    X = vcat(getallX(s)...)
+    Y = vcat(getallY(s)...)
+    inv(X' * X) * (X'Y)
 end
 
 s = clPopulation(50, randn(50), 2)
 
-sample(s,100)
+bols.(sample(s,1000).allclusters)
+
+sample1 = sample(s,1000)
+
+function getX(c::clCluster)
+    c.X
+end
+
+function getY(c::clCluster)
+    c.y
+end
+
+function getallX(s::clSample)
+    getX.(s.allclusters) #è un Vector{Vector{Float64}}
+end
+
+function getallY(s::clSample)
+    getY.(s.allclusters) #è un Vector{Vector{Float64}}
+end
+
+
+function montecarlo(p::clPopulation, n::Int64, Ng::Int64)
+    v = fill(p,n)
+    bols.(sample.(v,Ng))
+end
