@@ -162,7 +162,7 @@ Computes the OLS estimator using data from a single `clCluster`.
 The scalar OLS coefficient obtained from the cluster-level regression of `y` on `X`.
 """
 function bols(c::clCluster)
-    (inv(c.X' * c.X) * (c.X' * c.y))[1][1]
+    (inv(c.X' * c.X) * (c.X' * c.y))
 end
 
 
@@ -182,7 +182,7 @@ Aggregates all regressors via `getallX(s)` and all outcomes via `getallY(s)` bef
 function bols(s::clSample)
     X = vcat(getallX(s)...)
     Y = vcat(getallY(s)...)
-    inv(X' * X) * (X'Y)
+    betahat = inv(X' * X) * (X'Y)
 end
 
 s = clPopulation(50, randn(50), 2)
@@ -271,8 +271,9 @@ function montecarlo(p::clPopulation, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     bols.(sample.(v,Ng))
 end
-
-pp = hePopulation(50,rand(Normal(2,4),50),randn(50))
+beta1 = rand(Normal(2,4),50)
+pp = hePopulation(50,beta1,randn(50))
 ss = sample(pp,100)
  
-
+betahat = (bols.(sample(pp,1000).allclusters))
+permutedims(stack(betahat))[:,2] - beta1
