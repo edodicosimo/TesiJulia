@@ -271,5 +271,5 @@ function montecarlo(p::clPopulation, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     bols.(sample.(v,Ng))
 end
-
+ 
 
