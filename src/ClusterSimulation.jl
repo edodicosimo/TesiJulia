@@ -48,7 +48,7 @@ Used to store all elements associated with one cluster in the Monte Carlo simula
 struct clCluster
     Ng :: Integer
     df :: DataFrame
-    X :: Vector
+    X :: Matrix
     y :: Vector
     u :: Vector
 end
@@ -123,11 +123,12 @@ function simulateclCluster(mu_g::Float64, Ng::Int64, β::Float64)
     b = max.(s .^ 2 .- a.^2, 0)
     Z1 = randn(Ng)
     Z2 = randn(Ng)
-    Xig = s .* Z1
+    Xig = [ones(Ng) s .* Z1]
     uig = a .* Z1 .+ b .* Z2
-    y_ig =  Xig .* β .+ uig
+    beta = [1, β]
+    y_ig =  Xig * beta .+ uig
     df = DataFrame(
-        "Xig" => Xig,
+        "Xig" => Xig[:,2],
         "y_ig" => y_ig,
         "uig" => uig
         )
@@ -146,7 +147,7 @@ function simulateHeCluster(beta::Float64, cg::Float64, Ng::Int64)
         "y_ig" => y_ig,
         "uig" => uig
     )
-    c = clCluster(Ng, df, Xig[:,2], y_ig, uig)
+    c = clCluster(Ng, df, Xig, y_ig, uig)
 end
 
 """
