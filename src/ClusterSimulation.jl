@@ -24,6 +24,12 @@ struct clPopulation <: Population
     β::Float64
 end
 
+struct hePopulation <: Population
+    G::Int64
+    βg::Vector{Float64}
+    cg::Vector{Float64}
+end
+
 """
     clCluster(Ng, df, X, y, u)
 
@@ -57,10 +63,14 @@ Represents a full sample composed of multiple clusters.
 
 Serves as the main container for the simulated dataset used in estimation.
 """
+abstract type Sample end
+
 struct clSample
     allclusters::Array{clCluster,1}
     N::Integer
 end
+
+
 
 """
     sample(p, Ng)
