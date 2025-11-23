@@ -277,3 +277,4 @@ ss = sample(pp,100)
  
 betahat = (bols.(sample(pp,1000).allclusters))
 permutedims(stack(betahat))[:,2] - beta1
+
