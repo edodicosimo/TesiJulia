@@ -271,10 +271,5 @@ function montecarlo(p::clPopulation, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     bols.(sample.(v,Ng))
 end
-beta1 = rand(Normal(2,4),50)
-pp = hePopulation(50,beta1,randn(50))
-ss = sample(pp,100)
- 
-betahat = (bols.(sample(pp,1000).allclusters))
-permutedims(stack(betahat))[:,2] - beta1
+
 
