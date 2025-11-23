@@ -4,6 +4,8 @@ using Statistics
 using DataFrames
 using Plots
 
+
+abstract type Population end
 """
     clPopulation(G, mu, β)
 
@@ -16,7 +18,7 @@ Container for the data-generating parameters of the clustered population.
 
 Used as the base configuration for generating clustered samples in the Monte Carlo simulation.
 """
-struct clPopulation
+struct clPopulation <: Population
     G::Integer
     mu::Vector{Float64}
     β::Float64
