@@ -63,13 +63,10 @@ Represents a full sample composed of multiple clusters.
 
 Serves as the main container for the simulated dataset used in estimation.
 """
-abstract type Sample end
-
 struct clSample
     allclusters::Array{clCluster,1}
     N::Integer
 end
-
 
 
 """
@@ -90,9 +87,13 @@ Internally applies `simulateCluster` to each cluster mean in `p.mu`.
 """
 function sample(p::clPopulation, Ng::Int)
     N = p.G * Ng
-    allc = Vector{Float64}(undef, N)
     allc = simulateCluster.(p.mu,Ng, p.β)
     sample = clSample(allc, N)
+end
+
+function sample(p::hePopulation, Ng::Int)
+    N = p.G * Ng
+
 end
 
 """
