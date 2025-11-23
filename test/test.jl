@@ -19,3 +19,20 @@ include("../src/ClusterSimulation.jl")
         @test all(consistentat01)
     end
 end
+
+@testset "cl Test" begin
+    @testset "Simulation test" begin
+        beta2 = 2
+
+        s = clPopulation(50, randn(50), beta2)
+        @test isa(s,clPopulation)
+
+        sample1 = sample(s,1000)
+        @test isa(sample1, clSample)
+    end
+    @testset "Consistency Test" begin
+        consistentat04 = .≈(permutedims(stack(bols.(sample1.allclusters)))[:,2] .- beta2, 0 ; atol=0.4)
+        @test all(consistentat04)
+    end
+
+end

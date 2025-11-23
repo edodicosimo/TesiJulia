@@ -185,11 +185,7 @@ function bols(s::clSample)
     betahat = inv(X' * X) * (X'Y)
 end
 
-s = clPopulation(50, randn(50), 2)
 
-bols.(sample(s,1000).allclusters)
-
-sample1 = sample(s,1000)
 
 """
     getX(c)
@@ -273,3 +269,4 @@ function montecarlo(p::clPopulation, iterations::Int64, Ng::Int64)
 end
  
 
+permutedims(stack(bols.(sample(s,1000).allclusters)))[:,2]
