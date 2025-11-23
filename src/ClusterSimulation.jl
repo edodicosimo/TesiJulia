@@ -1,6 +1,7 @@
 #LOAD LIBRARIES
 using LinearAlgebra
 using Statistics
+using Distributions
 using DataFrames
 using Plots
 
@@ -83,21 +84,22 @@ A `clSample` object containing:
 - all simulated clusters,
 - the total number of observations `N = p.G * Ng`.
 
-Internally applies `simulateCluster` to each cluster mean in `p.mu`.
+Internally applies `simulateclCluster` to each cluster mean in `p.mu`.
 """
 function sample(p::clPopulation, Ng::Int)
     N = p.G * Ng
-    allc = simulateCluster.(p.mu,Ng, p.β)
+    allc = simulateclCluster.(p.mu,Ng, p.β)
     sample = clSample(allc, N)
 end
 
 function sample(p::hePopulation, Ng::Int)
     N = p.G * Ng
-
+    allc = simulateHeCluster.(p.βg,p.cg,Ng)
+    sample = clSample(allc,N)
 end
 
 """
-    simulateCluster(mu_g, Ng, β)
+    simulateclCluster(mu_g, Ng, β)
 
 Generates a single cluster according to the population DGP.
 
@@ -115,7 +117,7 @@ A `clCluster` object containing:
 
 Internally constructs `Xig` and `uig` via transformations of standard normal draws and builds the implied DGP for `y_ig`.
 """
-function simulateCluster(mu_g::Float64, Ng::Int64, β::Float64)
+function simulateclCluster(mu_g::Float64, Ng::Int64, β::Float64)
     s = sqrt.(abs.(mu_g.+10)) #questo 10 qua è v_0
     a = mu_g ./ s
     b = max.(s .^ 2 .- a.^2, 0)
@@ -132,6 +134,20 @@ function simulateCluster(mu_g::Float64, Ng::Int64, β::Float64)
     c = clCluster(Ng, df, Xig, y_ig, uig)
 end
 
+
+function simulateHeCluster(beta::Float64, cg::Float64, Ng::Int64)
+    Xig = [ones(Ng) randn(Ng)]
+    betag = [1, beta]
+    vig = randn(Ng)
+    uig = vig .+ cg
+    y_ig = Xig * betag .+ uig
+    df = DataFrame(
+        "Xig" => Xig[:,2],
+        "y_ig" => y_ig,
+        "uig" => uig
+    )
+    c = clCluster(Ng, df, Xig[:,2], y_ig, uig)
+end
 
 """
     bols(c)
@@ -254,4 +270,8 @@ function montecarlo(p::clPopulation, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     bols.(sample.(v,Ng))
 end
+
+pp = hePopulation(50,rand(Normal(2,4),50),randn(50))
+ss = sample(pp,100)
+ 
 
