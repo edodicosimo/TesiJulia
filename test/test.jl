@@ -43,4 +43,8 @@ end
 end
 
 
+beta1 = rand(Normal(2,4),50)
+hep = hePopulation(50,beta1,randn(50))
+hes = sample(hep,100)
 
+ccc = hes.allclusters[1]

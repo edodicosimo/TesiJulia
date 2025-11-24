@@ -271,3 +271,7 @@ end
 #TESTARE LA CONSISTENZA (IN G VS IN NG)
 #SCRIVERE FUZNIONE CHE CALCOLA LA WHITE VAR, SIA PER POPOLAZIONE CHE PER CLUSTER
 
+function computeResidual(c::clCluster)
+    betahat = bols(c)
+    c.y .- c.X * betahat 
+end
