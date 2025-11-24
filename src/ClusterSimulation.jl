@@ -269,22 +269,29 @@ Internally replicates the population `p`, draws a sample for each replication, a
 """
 function montecarlo(p::Population, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
-    bols.(sample.(v,Ng))
+    b = bols.(sample.(v,Ng))
+    return (mean(getBeta(b)), var(getBeta(b)))
 end
 
 function consistencyNg(p::hePopulation)
     v = 2 .^ (1:10)
     l = length(v)
     pop = fill(p,l)
-    betahat = permutedims(stack(bols.(sample.(pop,v))))[:,2]
+    betahat = montecarlo.(pop,100,v)
     df = DataFrame(
         "Ng" => v,
         "BetaHat" => betahat
     )
+    df.Mean = first.(df.BetaHat)
+    df.SD   = last.(df.BetaHat)
+    return df
 end
 
 #TODO TESTARE LA CONSISTENZA (IN G VS IN NG)
 #TODO SCRIVERE FUZNIONE CHE CALCOLA LA WHITE VAR SIA PER POPOLAZIONE 
+#TODO FARE IL PLOT DELLA CONVERGENZA IN NG, SCRIVERE FUNZIONE
+#TODO MAYBE FARE STRUCT PER OGGETTOCONVERGENZA
+
 
 function computeResidual(c::clCluster)
     betahat = bols(c)
@@ -295,4 +302,8 @@ function WhiteAvar(c::clCluster)
     uhat = computeResidual(c)
     X = c.X
     inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
+end
+
+function getBeta(a::Vector{Vector{Float64}})
+    permutedims(stack(a))[:,2]
 end
