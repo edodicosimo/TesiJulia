@@ -1,0 +1,25 @@
+## Introduction
+
+In costructing the confidence intervals of the OLS estimator $\hat{\beta}_{\text{ols}}$, it is the asymptotic distribution of 
+$$
+\frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i}
+$$
+that determines the estimator's asymptotic distribution. Assuming that $E[X_{i}u_{i}] = 0$, the Lindernberg-Levy CLT apply:
+$$
+\frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0,  \frac{1}{N} \sum_{i}\operatorname{Var}(X_{i}u_{i}) \right)
+$$
+But this hold true only if the individual observations are all independent, in fact summing 2 random variables $X_{1}$ and $X_{2}$ we get another random variable (call it $Z$) with expected value equal to $E[X_{1}]+E[X_{2}]$ and variance equal to $\text{Var}(X_{1})+\text{Var}(X_{2})+2 \cdot\text{cov}(X_{1},X_{2})$. 
+Summing $N$ random variables ($X_{1},\dots,X_{n}$), assume $E[X_{i} = 0]$, we get a new random variable $Z_{N}= \sum_{i=1}^NX_{i}$:
+$$
+Z_{N} \sim \left( 0,\sum_{i=1}^N \text{Var}(X_{i}) + 2\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i},X_{j})\right) 
+$$
+if all the $X_{i}$s are **independent** all the joint moments (and so also the convariancers) are equal to zero and, dividing by $\sqrt{ N }$:
+$$
+\frac{1}{\sqrt{ N }}(Z_{N})\sim \left( 0, \frac{1}{N}\sum_{i=1}^N \text{Var}(X_{i}) \right) 
+$$
+So the variance of $Z_{N}$ scaled by $\frac{1}{\sqrt{ N }}$ is the average variance of all the $X_{i}$s. <br>
+But here comes the problem, if our data are clustered we do not have that all the observation are independent, but rather we have that the observation of all the individuals inside a cluster are correlated, so we would have that
+$$
+\frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0, \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i}) + \frac{2}{N}\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i}u_{i},X_{j}u_{j})\right)
+$$
+The White variance estimator $\xrightarrow{d} \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i})$, so it would not consistently estimate the asymptotic variance. 

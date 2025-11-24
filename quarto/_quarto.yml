@@ -1,0 +1,9 @@
+title: "Cluster Robust Variance Estimation"
+author: "Edoardo Di Cosimo"
+format: 
+  typst:
+    toc: true
+    section-numbering: 1.1.a
+engine: julia
+
+
