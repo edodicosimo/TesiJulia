@@ -23,3 +23,70 @@ $$
 \frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0, \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i}) + \frac{2}{N}\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i}u_{i},X_{j}u_{j})\right)
 $$
 The White variance estimator $\xrightarrow{d} \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i})$, so it would not consistently estimate the asymptotic variance. 
+
+
+### What is a cluster?
+
+But let's take a step back and ask ourselves what does it mean that our data are clustered?  
+[@cameron2015cluster] define a cluster as a subgroup in the population such that individuals inside it has errors that are correlated. According to [@imbens] what matters is the correlation of $X_{i} u_{i}$. This difference arises only due to the fact that in [@cameron2015cluster] regressors are considered non stochastic.  
+In essence, the defining feature of a cluster is that individuals within it exhibit some form of unobserved correlation.
+
+::: {.callout-warning title="Qualche esempio"}
+Qua devo aggiungere gli esempi dalla letteratura tipo:  
+- @moulton1990illustration    
+- @bertrand2004much
+:::
+
+
+Let's say that in our population there are $N$ individuals from which we observe a trait $X$, so that we have $N$ random variables $X_{ig} = \left( X_{11}, \dots, X_{{Ng}1}, X_{12}, \dots, X_{{Ng}2}, \dots, X_{{Ng}G} \right)$ , where $i$ index an individual inside a cluster and $g$ is the cluster.
+We can think of them as being drawn from the same distribution (so that they would be identically distributed), let's assume that this distribution has mean $0$.   
+But they are not independent if they share the same cluster. This means that their joint distribution is not just the product of the marginals and their covariance may not be $0$, so the convolution of two of them in the same cluster is:
+$$
+X_{11}+X_{12} \sim \left( 0,\operatorname{Var}\left( X_{1} \right)+\operatorname{Var}\left( X_{2} \right) + 2 \operatorname{Cov}\left( X_{1},X_{2} \right) \right)
+$$
+
+Saying that observations within a cluster are correlated means that the values of one individual carries information about the values of another one in the same cluster.
+More concretely, if two individuals $i$ and $j$ belong to the same cluster $g$, then observing that one of them takes a value above the overall (population-wide) mean of $X$ increases the likelihood that the other will also be above the mean:
+$$
+P\big(X_{i} > E[X] \,\big|\, X_{j} > E[X] \ \text{and} \ i,j \in g \big) \; > \; P\big(X_{i} > E[X]\big).
+$$
+In other words, the event that $X_j$ exceeds the population expectation $E[X]$ raises the conditional probability that $X_i$ does the same when both belong to the same cluster.
+This would be the same for values below the mean:
+$$
+P\big(X_{i} < E[X] \,\big|\, X_{j} < E[X] \ \text{and} \ i,j \in g \big) \; > \; P\big(X_{i} < E[X]\big).
+$$
+Outcomes within the same cluster are positively associated — they tend to move in the same direction relative to the overall mean.
+
+
+### Cluster-Specific Distribution
+
+We can define $X_{ig}= \{ X_{i}: \text{individual } i \in \text{ cluster }g \}$.
+$X_{ig}$ can be thought of as a different random variable than $X_{i}$, with its own distribution. It is like zooming in a cluster, the probability of a certain value occurring would be different than the probability of the same value occurring in the whole population.
+It has its own expectation: 
+$$
+\mathbb{E}(X_{ig}) = E(X_{i}|X_{i} \in g) \equiv \mu_{g}
+$$
+And, due to the law of total expectation:
+$$
+\mathbb{E}(\mu_{g}) = \mathbb{E}[\mathbb{E}(X_{i}|X_{i} \in g)] = E[X_{i}]
+$$
+It also has its own variance, which is the conditional variance of $X_{i}$, given that $X_{i} \in g$
+Call $G$ the event $X_{i} \in g$
+$$
+\sigma^2_{g} \equiv \mathbb{E}\left[ X_{ig} - \mathbb{E}(X_{ig}) \right]^2 
+$$
+$$
+=\mathbb{E}\left[ (X_{i} - \mathbb{E}(X_{i}|G))^2 | G\right] 
+$$
+$$​
+​\operatorname{Var}(X_{i} \mid G)
+= \mathbb{E}\!\left[ X_{i}^{2} \mid G \right]
+- \bigl( \mathbb{E}[ X_{i} \mid G ] \bigr)^{2}
+$$
+Due to the law of total variance:
+$$
+\operatorname{Var}(X_{i})
+= \mathbb{E}\!\left[ \operatorname{Var}(X_{i} \mid G) \right]
++ \operatorname{Var}\!\left( \mathbb{E}[ X_{i} \mid G ] \right).
+$$
+

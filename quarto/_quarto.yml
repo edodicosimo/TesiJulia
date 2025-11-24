@@ -5,5 +5,7 @@ format:
     toc: true
     section-numbering: 1.1.a
 engine: julia
+bibliography: references.bib
+
 
 
