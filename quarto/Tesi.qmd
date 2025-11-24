@@ -134,18 +134,30 @@ Ng = 1000 # Number of individuals per cluster
 
 
 Then we use each of these betas to simulate a cluster according to the model in @eq-model
-
 ```{julia}
 pop = hePopulation(G,β,randn(G))
-sam = sample(pop,Ng)
 ```
-`pop = hePopulation(G, β, randn(G))`
-This line creates a heterogeneous-effects population.
+This line creates a heterogeneous-effects population.  
 - **`G`** is the number of clusters.  
-- **`β`** is the vector of betas.
+- **`β`** is the vector of betas.  
 - **`randn(G)`** produces the vector $c_{g} \sim \mathcal{N}\left( 0,1 \right)$.  
 The constructor returns a population struct that stores the cluster-level parameters used later to simulate data.
-`sam = sample(pop, Ng)`
-This line generates a sample from the population.
+```{julia}
+sam = sample(pop, Ng)
+```  
+This line generates a sample from the population.  
 - **`Ng`** is the number of observations per cluster.  
-The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.
+The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.  
+The sample struct has a field `allclusters` that is an array of cluster structs, so we can define a function that compute $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates. 
+```{julia}
+betahat = permutedims(stack(bols.(sam.allclusters)))[:,2]
+```
+And similarly define a function that compute the White Variance estimator and broadcast it to all clusters.
+```{julia}
+WhiteAvar.(sam.allclusters)
+```
+We can check if the estimated vector $\hat{\boldsymbol{\beta}}_\text{g}$ is consistent for the population parameter $\boldsymbol{\beta_{g}}$ by subtracting one from another.
+```{julia}
+betahat .- β
+```
+

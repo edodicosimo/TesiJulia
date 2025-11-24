@@ -51,8 +51,8 @@ ccc = hes.allclusters[1]
 
 WhiteAvar(ccc)
 
-mean(WhiteAvar.(hes.allclusters))
+stack(WhiteAvar.(hes.allclusters))
 
 var(montecarlo(hep,1000,100))
 
-mean(bols.(hes.allclusters))
+permutedims(stack(bols.(hes.allclusters)))[:,2]
