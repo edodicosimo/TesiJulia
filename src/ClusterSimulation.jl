@@ -263,10 +263,11 @@ A vector containing the OLS estimates produced in each Monte Carlo iteration.
 
 Internally replicates the population `p`, draws a sample for each replication, and applies `bols` to each simulated sample.
 """
-function montecarlo(p::clPopulation, iterations::Int64, Ng::Int64)
+function montecarlo(p::Population, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     bols.(sample.(v,Ng))
 end
  
+#TESTARE LA CONSISTENZA (IN G VS IN NG)
+#SCRIVERE FUZNIONE CHE CALCOLA LA WHITE VAR, SIA PER POPOLAZIONE CHE PER CLUSTER
 
-permutedims(stack(bols.(sample(s,1000).allclusters)))[:,2]
