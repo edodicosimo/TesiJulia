@@ -56,3 +56,5 @@ stack(WhiteAvar.(hes.allclusters))
 var(montecarlo(hep,1000,100))
 
 permutedims(stack(bols.(hes.allclusters)))[:,2]
+
+plot(consistencyNg(hep).Ng,consistencyNg(hep).BetaHat)

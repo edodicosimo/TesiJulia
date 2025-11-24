@@ -271,9 +271,20 @@ function montecarlo(p::Population, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     bols.(sample.(v,Ng))
 end
- 
-#TESTARE LA CONSISTENZA (IN G VS IN NG)
-#SCRIVERE FUZNIONE CHE CALCOLA LA WHITE VAR, SIA PER POPOLAZIONE CHE PER CLUSTER
+
+function consistencyNg(p::hePopulation)
+    v = 2 .^ (1:10)
+    l = length(v)
+    pop = fill(p,l)
+    betahat = permutedims(stack(bols.(sample.(pop,v))))[:,2]
+    df = DataFrame(
+        "Ng" => v,
+        "BetaHat" => betahat
+    )
+end
+
+#TODO TESTARE LA CONSISTENZA (IN G VS IN NG)
+#TODO SCRIVERE FUZNIONE CHE CALCOLA LA WHITE VAR SIA PER POPOLAZIONE 
 
 function computeResidual(c::clCluster)
     betahat = bols(c)
