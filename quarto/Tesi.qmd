@@ -79,14 +79,73 @@ $$
 =\mathbb{E}\left[ (X_{i} - \mathbb{E}(X_{i}|G))^2 | G\right] 
 $$
 $$​
-​\operatorname{Var}(X_{i} \mid G)
-= \mathbb{E}\!\left[ X_{i}^{2} \mid G \right]
+\operatorname{Var}(X_{i} \mid G)
+= \mathbb{E}\left[ X_{i}^{2} \mid G \right]
 - \bigl( \mathbb{E}[ X_{i} \mid G ] \bigr)^{2}
 $$
 Due to the law of total variance:
 $$
 \operatorname{Var}(X_{i})
-= \mathbb{E}\!\left[ \operatorname{Var}(X_{i} \mid G) \right]
-+ \operatorname{Var}\!\left( \mathbb{E}[ X_{i} \mid G ] \right).
+= \mathbb{E}\left[ \operatorname{Var}(X_{i} \mid G) \right]
++ \operatorname{Var}\left( \mathbb{E}[ X_{i} \mid G ] \right).
 $$
 
+
+## Het 
+There are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.
+$$
+y_{ig} = \alpha + \beta_g X_{ig} + u_{ig}
+$$ {#eq-model}
+assume $u_{ig}$ has a cluster component and an individual-and-cluster component:
+$$
+u_{ig}= c_{g}+v_{ig}
+$$
+Where $v_{ig} \sim (0,\sigma^{2}_{v})$, $c_{g} \sim (0,\sigma^{2}_{c})$ but of course $c_{g}$ varies only at the cluster level.  
+In this way the expected value of the error given that individual $i$ is in cluster $g$ is:
+$$
+\mathbb{E_{g}}(u_{ig})= c_{g}  
+$$
+But as long as we have an intercept we can assume w.l.o.g that $\mathbb{E}\left[ X_{ig}u_{ig} \right]=0$.
+If I estimate $\hat{\beta}_\text{ols}$ inside cluster $g$, I get:
+$$
+\left( \hat{\beta_{g}} - \beta_{g} \right) = \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}\left( \sum_{i \in g}X_{i}u_{i} \right)  
+$$
+And:
+$$
+\hat{\beta}_\text{g} \overset{a}{\sim} \mathcal{N}\left( \beta_{g}, \frac{1}{N_{g}} \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}B\left(  \sum_{i \in g}X_{i}^{2}\right)^{-1} \right) 
+$$
+where $B_{g}$ is:
+$$
+B_{g} = \operatorname{Var}\left( X_{ig}u_{ig} \right)
+$$
+
+If I estimate $\beta$ across G clusters I get a vector of $G$ $\hat{\beta}_\text{g}$, and for each of these I can consistently estimate an asymptotic variance using White variance estimator since observation inside a cluster are i.i.d. 
+Since a linear combination of normal is itself normal I can average out those variances and get an estimate of the Avar of $\hat{\beta}_\text{ols}$.
+
+To test this let us simulate a dataset, first we draw a random vector of betas from a normal distribution with mean 2 and variance 4.
+
+```{julia}
+include("../src/ClusterSimulation.jl")
+G = 50 #Number of clusters 
+Ng = 1000 # Number of individuals per cluster
+ 
+β = rand(Normal(2,4),G)
+```
+
+
+Then we use each of these betas to simulate a cluster according to the model in @eq-model
+
+```{julia}
+pop = hePopulation(G,β,randn(G))
+sam = sample(pop,Ng)
+```
+`pop = hePopulation(G, β, randn(G))`
+This line creates a heterogeneous-effects population.
+- **`G`** is the number of clusters.  
+- **`β`** is the vector of betas.
+- **`randn(G)`** produces the vector $c_{g} \sim \mathcal{N}\left( 0,1 \right)$.  
+The constructor returns a population struct that stores the cluster-level parameters used later to simulate data.
+`sam = sample(pop, Ng)`
+This line generates a sample from the population.
+- **`Ng`** is the number of observations per cluster.  
+The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.

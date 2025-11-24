@@ -69,6 +69,10 @@ struct clSample
     N::Integer
 end
 
+function Base.show(io::IO, c::clSample)
+    print(io, "Cluster sample struct")
+end
+
 
 """
     sample(p, Ng)
