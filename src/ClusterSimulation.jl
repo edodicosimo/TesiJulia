@@ -275,3 +275,9 @@ function computeResidual(c::clCluster)
     betahat = bols(c)
     c.y .- c.X * betahat 
 end
+
+function WhiteAvar(c::clCluster)
+    uhat = computeResidual(c)
+    X = c.X
+    inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
+end

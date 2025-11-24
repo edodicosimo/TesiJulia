@@ -43,8 +43,16 @@ end
 end
 
 
-beta1 = rand(Normal(2,4),50)
-hep = hePopulation(50,beta1,randn(50))
-hes = sample(hep,100)
+beta1 = rand(Normal(2,4),500)
+hep = hePopulation(50,beta1,randn(500))
+hes = sample(hep,1000)
 
 ccc = hes.allclusters[1]
+
+WhiteAvar(ccc)
+
+mean(WhiteAvar.(hes.allclusters))
+
+var(montecarlo(hep,1000,100))
+
+mean(bols.(hes.allclusters))
