@@ -60,4 +60,15 @@ permutedims(stack(bols.(hes.allclusters)))[:,2]
 df = consistencyNg(hep)
 
 
-mean(beta1)
+using Plots
+
+plot(
+    df.Ng,
+    df.Mean,
+    ribbon = df.SD,
+    xlabel = "Ng",
+    ylabel = "BetaHat",
+    legend = false,
+    lw = 2,
+    fillalpha = 0.3,
+)

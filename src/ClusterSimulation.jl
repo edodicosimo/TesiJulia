@@ -270,11 +270,11 @@ Internally replicates the population `p`, draws a sample for each replication, a
 function montecarlo(p::Population, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     b = bols.(sample.(v,Ng))
-    return (mean(getBeta(b)), var(getBeta(b)))
+    return (mean(getBeta(b)), std(getBeta(b)))
 end
 
 function consistencyNg(p::hePopulation)
-    v = 2 .^ (1:10)
+    v = vcat(collect(1:5:50), collect(50:10:250),collect(250:100:1000))
     l = length(v)
     pop = fill(p,l)
     betahat = montecarlo.(pop,100,v)
