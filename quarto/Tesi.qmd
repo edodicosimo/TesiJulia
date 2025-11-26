@@ -169,7 +169,7 @@ function bols(s::clSample)
 	betahat = inv(X' * X) * (X'Y)
 end
 ```
-## Consistency in Ng test
+## Consistency as $N_{g} \xrightarrow{p} \infty$
 We want to test wether our estimate of the average partial effect gets better if the number of people that we draw in each cluster increases. In order to do so we ran a series of montecarlo simulation increasing $N_{g}$.
 ```{julia}
 #| output: false
@@ -191,4 +191,4 @@ plot(
     fillalpha = 0.3,
 )
 ```
-What we see in @fig-cons is the result of the montecarlo simulation, the line is the average estimates for each $N_{g}$, while the shaded area is the standard deviation, we can see clearly see from the graph that as the number of observation grows $\hat{\beta}_\text{ols}\xrightarrow{p}\beta _{\text{APE}}$
+What we see in @fig-cons is the result of the montecarlo simulation, the line is the average estimates for each $N_{g}$, while the shaded area is the standard deviation, we can see clearly see from the graph that as the number of observations inside a cluster grows $\hat{\beta}_\text{ols}\xrightarrow{p}\beta _{\text{APE}}$.

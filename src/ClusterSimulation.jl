@@ -184,7 +184,7 @@ A vector containing the OLS coefficient(s) estimated by stacking all cluster dat
 Aggregates all regressors via `getallX(s)` and all outcomes via `getallY(s)` before computing the estimator.
 """
 function bols(s::clSample)
-    X = vcat(getallX(s)...)
+    X = getallX(s)
     Y = vcat(getallY(s)...)
     betahat = inv(X' * X) * (X'Y)
 end
@@ -233,7 +233,7 @@ Collects the regressor vectors of all clusters in a `clSample`.
 A vector of vectors, where each element is the `X` vector of a cluster.
 """
 function getallX(s::clSample)
-    getX.(s.allclusters) 
+    reduce(vcat,getX.(s.allclusters)) 
 end
 
 """
@@ -287,11 +287,8 @@ function consistencyNg(p::hePopulation)
     return df
 end
 
-#TODO TESTARE LA CONSISTENZA (IN G VS IN NG)
-#TODO SCRIVERE FUZNIONE CHE CALCOLA LA WHITE VAR SIA PER POPOLAZIONE 
-#TODO FARE IL PLOT DELLA CONVERGENZA IN NG, SCRIVERE FUNZIONE
+#TODO TESTARE LA CONSISTENZA (IN G VS IN NG) 
 #TODO MAYBE FARE STRUCT PER OGGETTOCONVERGENZA
-
 
 function computeResidual(c::clCluster)
     betahat = bols(c)
@@ -301,6 +298,12 @@ end
 function WhiteAvar(c::clCluster)
     uhat = computeResidual(c)
     X = c.X
+    inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
+end
+
+function whiteAvar(s::clSample)
+    uhat = reduce(vcat,computeResidual.(s.allclusters)) #vettore di vettori
+    X = getallX(s)
     inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
 end
 

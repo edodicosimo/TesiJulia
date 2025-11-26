@@ -47,8 +47,12 @@ beta1 = rand(Normal(2,4),500)
 hep = hePopulation(50,beta1,randn(500))
 hes = sample(hep,1000)
 
-ccc = hes.allclusters[1]
+whiteAvar(hes)
 
+getallX(hes)
+
+ccc = hes.allclusters[1]
+computeResidual(ccc)
 WhiteAvar(ccc)
 
 stack(WhiteAvar.(hes.allclusters))
