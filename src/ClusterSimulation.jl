@@ -238,7 +238,7 @@ end
 
 """
     getallY(s)
-
+    
 Collects the outcome vectors of all clusters in a `clSample`.
 
 # Parameters
@@ -263,7 +263,7 @@ Runs a Monte Carlo experiment using the population specification `p`.
 - `Ng::Int64`: Number of observations per cluster in each replication.
 
 # Returns
-A vector containing the OLS estimates produced in each Monte Carlo iteration.
+A struct containing as the first element the mean of the OLS estimates produced in each Monte Carlo iteration, and as second the stdev.
 
 Internally replicates the population `p`, draws a sample for each replication, and applies `bols` to each simulated sample.
 """
@@ -288,7 +288,11 @@ function consistencyNg(p::hePopulation)
 end
 
 #TODO TESTARE LA CONSISTENZA (IN G VS IN NG) 
-#TODO MAYBE FARE STRUCT PER OGGETTOCONVERGENZA
+#TODO TESTARE SE IL MIO MODO DI FARE LA MONTECARLO E PIU VELOCE CHE FARLO CON UN CICLO FOR
+
+function computeExpectedSig(c::clCluster) 
+    mean(c.u .* c.X)
+end
 
 function computeResidual(c::clCluster)
     betahat = bols(c)
@@ -305,6 +309,18 @@ function whiteAvar(s::clSample)
     uhat = reduce(vcat,computeResidual.(s.allclusters)) #vettore di vettori
     X = getallX(s)
     inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
+end
+
+function innerBCrve(c::clCluster)
+    X = c.X
+    uhat = computeResidual(c)
+    X' * uhat * uhat' * X
+end
+
+function CRVE(s::clSample)
+    B = sum(innerBCrve.(s.allclusters))
+    X = getallX(s)
+    inv(X'*X) * B * inv(X'*X)
 end
 
 function getBeta(a::Vector{Vector{Float64}})

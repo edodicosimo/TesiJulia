@@ -37,11 +37,10 @@ end
 
     @testset "Montecarlo" begin
         montecarlo(hep,100,100)
-        #FINISCI DI SCRIVERE IL TEST PER VEDERE SE LA MONTECARLO FUZNIONA
+        #TODO FINISCI DI SCRIVERE IL TEST PER VEDERE SE LA MONTECARLO FUZNIONA
     end
 
 end
-
 
 beta1 = rand(Normal(2,4),500)
 hep = hePopulation(50,beta1,randn(500))
@@ -54,9 +53,10 @@ getallX(hes)
 ccc = hes.allclusters[1]
 computeResidual(ccc)
 WhiteAvar(ccc)
-
+computeExpectedSig.(hes.allclusters)
 stack(WhiteAvar.(hes.allclusters))
-
+innerBCrve(ccc)
+CRVE(hes)
 (montecarlo(hep,1000,100))
 
 permutedims(stack(bols.(hes.allclusters)))[:,2]
