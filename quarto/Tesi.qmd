@@ -22,13 +22,76 @@ But here comes the problem, if our data are clustered we do not have that all th
 $$
 \frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0, \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i}) + \frac{2}{N}\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i}u_{i},X_{j}u_{j})\right)
 $$
-The White variance estimator $\xrightarrow{d} \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i})$, so it would not consistently estimate the asymptotic variance. 
+The variance estimator that is most commonly used, the White variance estimator assumes that all the covariances in the expression above are 0, and so estimates only $\frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i})$, so it would not consistently estimate the asymptotic variance. 
+
+### Why we estimate $\operatorname{Var}\left(\hat{\beta}  \right)$
+To follow what comes next, it is essential to clarify **what we are actually estimating** when we estimate the variance of  
+$\hat{\beta}_\text{ols}$. After all, $\hat{\beta}_\text{ols}$ is just a number—so what does it mean to speak of its variance?  
+Is it a random variable? Does it have a distribution?
+Yes. The distribution we refer to is the distribution of $\hat{\beta}_\text{ols}$ **across repeated samples**, i.e., the values it would take if we changed the individuals drawn from the population.
+Since $\hat{\beta}_\text{ols}$ is a function of random variables ($X_i$ and $u_i$), if we knew their full population distributions, we would know the exact value of $\beta$. But because we only observe a sample, our estimate varies from sample to sample. In this sense, $\hat{\beta}_\text{ols}$ *is* a random variable and therefore has a distribution.
+
+### What are clustered data?
+Let's take a step back and ask ourselves what does it mean that our data are clustered? @cameron2015cluster define a cluster as a subgroup in the population such that individuals inside it has errors that are correlated. According to @imbens what matters is the correlation of $X_{i} u_{i}$. This difference arises due to the fact that in @cameron2015cluster regressors are considered non stochastic. In essence, the defining feature of a cluster is that individuals within it exhibit some form of **unobserved** correlation.  
+Suppose our sample contains $N$ individuals, each with an observed trait $X$. We can represent these as  $X_{ig} = (X_{11}, \dots, X_{N_1 1},\; X_{12}, \dots, X_{N_2 2}, \dots,\; X_{N_G G})$, where $i$ indexes individuals within a cluster and $g$ indexes the cluster.
+
+We can think of all these $X_{ig}$ as being drawn from the same population distribution, so they are **identically distributed**. Let us assume this distribution has mean $0$.  
+However, individuals belonging to the same cluster are **not independent**. Their joint distribution is not simply the product of their marginals, their covariances may not be zero.  
+Saying that observations within a cluster are correlated means that knowing the value of one individual gives information about another individual in the same cluster.
+If individuals $i$ and $j$ belong to the same cluster $g$, then:
+$$
+P\left(X_i > E[X] \mid X_j > E[X],\, i,j \in g\right) > P(X_i > E[X])
+$$
+and similarly:
+$$
+P\left(X_i < E[X] \mid X_j < E[X],\, i,j \in g\right) > P(X_i < E[X]).
+$$
+outcomes inside the same cluster tend to move together relative to the overall mean—they are positively associated.
+If we focus on a single cluster $g$, we can view its observations as:
+$$
+X_{g} = \{X_{i} | \text{ individual } i \in \text{ cluster } g \}
+$$
+Each cluster is a subpopulation with its own distribution, and the overall population is the mixture of all $G$ cluster distributions.
+
+### General setup
+In this section, we lay out the general setup that will guide the rest of the thesis.
+We assume that there are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.
+$$
+y_{ig} = \alpha + \beta_g X_{ig} + u_{ig}
+$$
+
+We model $u_{ig}$ has having a cluster component and an individual-and-cluster component:
+$$
+u_{ig}= c_{g}+v_{ig}
+$$
+Where $v_{ig} \sim (0,\sigma^{2}_{v})$, $c_{g} \sim (0,\sigma^{2}_{c})$ but of course $c_{g}$ varies only at the cluster level.
+In this way the expected value of the error given that individual $i$ is in cluster $g$ is:
+$$
+\mathbb{E_{g}}(u_{ig})= c_{g}
+$$
+But as long as we have an intercept we can assume w.l.o.g that $\mathbb{E}\left[ u_{ig} \right]=0$.
+If I want to estimate $\beta_{g}$ in each cluster $g$, I get (in each cluster):
+$$
+\hat{\beta_{g}} = \beta_{g}  + \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}\left( \sum_{i \in g}X_{i}u_{i} \right)  
+$$
+And:
+$$
+\hat{\beta}_\text{g} \overset{a}{\sim} \mathcal{N}\left( \beta_{g}, \frac{1}{N_{g}} \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}B\left(  \sum_{i \in g}X_{i}^{2}\right)^{-1} \right) 
+$$
+where $B_{g}$ is:
+$$
+B_{g} = \operatorname{Var}\left( X_{ig}u_{ig} \right)
+$$
+If we estimate $\beta$ separately across $G$ clusters, we obtain a vector of cluster-specific estimates  $\{\,\hat{\beta}_g\,\}_{g=1}^G$.  
+If for each cluster we could consistently estimate its asymptotic variance, we could take the average of these cluster-level estimates to obtain a consistent estimate of the asymptotic variance of the overall $\hat{\beta}_\text{pols}$, since a linear combination of normal random variables is also normal.
+But first we have to ask ourself wether each of the estimated parameters is consistent.
+
 
 
 ### What is a cluster?
 
 But let's take a step back and ask ourselves what does it mean that our data are clustered?  
-[@cameron2015cluster] define a cluster as a subgroup in the population such that individuals inside it has errors that are correlated. According to [@imbens] what matters is the correlation of $X_{i} u_{i}$. This difference arises only due to the fact that in [@cameron2015cluster] regressors are considered non stochastic.  
+@cameron2015cluster define a cluster as a subgroup in the population such that individuals inside it has errors that are correlated. According to @imbens what matters is the correlation of $X_{i} u_{i}$. This difference arises only due to the fact that in @cameron2015cluster regressors are considered non stochastic.  
 In essence, the defining feature of a cluster is that individuals within it exhibit some form of unobserved correlation.
 
 ::: {.callout-warning title="Qualche esempio"}
@@ -105,7 +168,7 @@ In this way the expected value of the error given that individual $i$ is in clus
 $$
 \mathbb{E_{g}}(u_{ig})= c_{g}  
 $$
-But as long as we have an intercept we can assume w.l.o.g that $\mathbb{E}\left[ X_{ig}u_{ig} \right]=0$.
+But as long as we have an intercept we can assume w.l.o.g that $\mathbb{E}\left[u_{ig} \right]=0$.
 If I estimate $\hat{\beta}_\text{ols}$ inside cluster $g$, I get:
 $$
 \left( \hat{\beta_{g}} - \beta_{g} \right) = \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}\left( \sum_{i \in g}X_{i}u_{i} \right)  
@@ -164,7 +227,7 @@ Note that doing $\frac{1}{G}\sum _{g}\hat{\beta}_\text{g}$ is the same as comput
 We define a function to do so:
 ```{julia}
 function bols(s::clSample)
-	X = vcat(getallX(s)...)
+	X = getallX(s)
 	Y = vcat(getallY(s)...)
 	betahat = inv(X' * X) * (X'Y)
 end
@@ -191,4 +254,4 @@ plot(
     fillalpha = 0.3,
 )
 ```
-What we see in @fig-cons is the result of the montecarlo simulation, the line is the average estimates for each $N_{g}$, while the shaded area is the standard deviation, we can see clearly see from the graph that as the number of observations inside a cluster grows $\hat{\beta}_\text{ols}\xrightarrow{p}\beta _{\text{APE}}$.
+What we see in @fig-cons is the result of the montecarlo simulation, the line is the average estimates for each $N_{g}$, while the shaded area is the standard deviation, we can clearly see from the graph that as the number of observations inside a cluster grows $\hat{\beta}_\text{ols}\xrightarrow{p}\beta _{\text{APE}}$.
