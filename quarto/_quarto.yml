@@ -3,7 +3,7 @@ author: "Edoardo Di Cosimo"
 format: 
   typst:
     toc: true
-    section-numbering: 1.1.a
+    section-numbering: 1.1.1
 engine: julia
 bibliography: references.bib
 
