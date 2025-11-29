@@ -73,6 +73,16 @@ function Base.show(io::IO, c::clSample)
     print(io, "Cluster sample struct")
 end
 
+function Base.show(io::IO, p::Population)
+    s = ""
+    if isa(p, hePopulation)
+        s = "with"
+    else
+        s = "without"
+    end 
+    G = p.G
+    print(io, "Population with $G clusters and $s heterogeneous effect")
+end
 
 """
     sample(p, Ng)
@@ -262,6 +272,7 @@ end
 function getU(c::clCluster)
     c.u
 end
+
 
 ### SI POTREBBE FARE UN STRUCT MONTECARLO, MA PER ORA è IMPLEMENTATO COME UN SEMPLICE VETTORE QUINDI CI STA
 """

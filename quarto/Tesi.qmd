@@ -108,24 +108,37 @@ In order for $\hat{\beta}_\text{ols}$ to be consistent we need exogenity, we nee
 
 ## Simulating a dataset
 We will simulate data in two ways, in the first one we will make so that the expected value of the score is $0$ in all clusters, in the second one the expected value of the score will be $0$ only at the population level.
-First we draw a random vector of betas from a normal distribution with mean 2 and variance 4.
-We define a function that generates data for a single cluster $g$ of size $N_g$ based on the following model.
-$$
-y_{ig} =   \beta_{g} x_{ig} + (c_g + v_{ig})
-$$
-## Description of the Two Steps
 
-`pop = hePopulation(G, β, randn(G))`
-This line creates a heterogeneous-effects population.
+First we draw a random vector $\boldsymbol{\beta_{g}}$ from a normal distribution with mean $\beta _{APE}$ and variance $\sigma^{2}_{\beta}$.
+```{julia}
+include("../src/ClusterSimulation.jl")
+G = 50 #Number of clusters 
+Ng = 100 # Number of individuals per cluster
+ 
+β = rand(Normal(2,4),G)
+```
+We then simulate our dataset in two steps, according to the following model:
+$$
+y_{ig} = \beta_{g} x_{ig} + (c_g + v_{ig})
+$$
+In the first step we simulate the population parameters, and in the second we draw from them.
+
+### Description of the Two Steps
+```{julia}
+pop = hePopulation(G, β, randn(G))
+```
+This line creates a heterogeneous-effects population.  
 - **`G`** is the number of clusters.  
-- **`β`** is the vector of betas.
+- **`β`** is the vector of betas.  
 - **`randn(G)`** produces the vector $c_{g} \sim \mathcal{N}\left( 0,1 \right)$.  
-The constructor returns a population struct that stores the cluster-level parameters used later to simulate data.
-`sam = sample(pop, Ng)`
-This line generates a sample from the population.
-- **`Ng`** is the number of observations per cluster.  
-The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.
- $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates. 
+The constructor returns a population struct that stores the cluster-level parameters used to simulate data.  
+```{julia}
+sam = sample(pop, Ng)
+```
+This line generates a sample from the population.  
+- **`Ng`** is the number of observations per cluster.    
+The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.  
+ $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates.  
 
 ## Het 
 There are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.

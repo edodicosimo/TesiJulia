@@ -4,13 +4,13 @@ include("../src/ClusterSimulation.jl")
 
 
 @testset "Heterogeneous Effect Test" begin
-    beta1 = rand(Normal(2,4),50)
-    hep = hePopulation(50,beta1,randn(50))
+    let 
+        beta1 = rand(Normal(2,4),50)
+        hep = hePopulation(50,beta1,randn(50))
+        hes = sample(hep,100)
 
     @testset "Simulation test" begin
         @test isa(hep, hePopulation)
-
-        hes = sample(hep,100)
         @test isa(hes,clSample)
     end
 
@@ -25,6 +25,7 @@ include("../src/ClusterSimulation.jl")
         consistentat01 = .≈(permutedims(stack(betahat))[:,2] - beta1 , 0; atol=0.1)
         @test all(consistentat01)
     end
+end
 end
 
 @testset "cl Test" begin
@@ -43,10 +44,10 @@ end
         end
     end
 
-    @testset "Montecarlo" begin
-        montecarlo(hep,100,100)
-        #TODO FINISCI DI SCRIVERE IL TEST PER VEDERE SE LA MONTECARLO FUZNIONA
-    end
+    # @testset "Montecarlo" begin
+    #     montecarlo(hep,100,100)
+    #     #TODO FINISCI DI SCRIVERE IL TEST PER VEDERE SE LA MONTECARLO FUZNIONA
+    # end
 
 end
 
