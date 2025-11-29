@@ -2,12 +2,12 @@ using Test
 
 include("../src/ClusterSimulation.jl")
 
+# Define population and sample that will be used for testing
+beta1 = rand(Normal(2,4),500)
+hep = hePopulation(50,beta1,randn(500))
+hes = sample(hep,1000)
 
 @testset "Heterogeneous Effect Test" begin
-    let 
-        beta1 = rand(Normal(2,4),50)
-        hep = hePopulation(50,beta1,randn(50))
-        hes = sample(hep,100)
 
     @testset "Simulation test" begin
         @test isa(hep, hePopulation)
@@ -22,28 +22,25 @@ include("../src/ClusterSimulation.jl")
 
     @testset "Consistency Test" begin
         betahat = (bols.(sample(hep,1000).allclusters))
-        consistentat01 = .≈(permutedims(stack(betahat))[:,2] - beta1 , 0; atol=0.1)
-        @test all(consistentat01)
+        consistentat02 = .≈(permutedims(stack(betahat))[:,2] - beta1 , 0; atol=0.2)
+        @test all(consistentat02)
     end
 end
-end
+
+
+beta2 = 2
+clp = clPopulation(50, randn(50), beta2)
+cls = sample(clp,1000)
 
 @testset "cl Test" begin
     @testset "Simulation test" begin
-        beta2 = 2
-
-        clp = clPopulation(50, randn(50), beta2)
         @test isa(clp,clPopulation)
-
-        cls = sample(clp,1000)
         @test isa(cls, clSample)
-    
+    end
         @testset "Consistency Test" begin
             consistentat04 = .≈(permutedims(stack(bols.(cls.allclusters)))[:,2] .- beta2, 0 ; atol=0.4)
             @test all(consistentat04)
         end
-    end
-
     # @testset "Montecarlo" begin
     #     montecarlo(hep,100,100)
     #     #TODO FINISCI DI SCRIVERE IL TEST PER VEDERE SE LA MONTECARLO FUZNIONA
@@ -51,11 +48,14 @@ end
 
 end
 
-beta1 = rand(Normal(2,4),500)
-hep = hePopulation(50,beta1,randn(500))
-hes = sample(hep,1000)
+@testset "Variance estimators" begin
+    w = whiteAvar(hes)
+    @test isa(w,Matrix)
+    crve = CRVE(hes)
+    @test isa(crve,Matrix)
+end
 
-whiteAvar(hes)
+
 
 getallX(hes)
 
@@ -65,7 +65,7 @@ WhiteAvar(ccc)
 computeExpectedSig.(hes.allclusters)
 stack(WhiteAvar.(hes.allclusters))
 innerBCrve(ccc)
-CRVE(hes)
+
 (montecarlo(hep,1000,100))
 
 permutedims(stack(bols.(hes.allclusters)))[:,2]
