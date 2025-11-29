@@ -109,17 +109,7 @@ mean( x .* u )
 
 reduce(vcat, getRegressorNoIntercept.( hes.allclusters ) )
 
-function getRegressorNoIntercept(c::clCluster)
-    c.X[:,2]
-end
 
-function checkScore(s::clSample)
-    getRegressorNoIntercept.(s.allclusters) .* getU.(s.allclusters)
-end
-
-function getU(c::clCluster)
-    c.u
-end
 
 X = getRegressorNoIntercept.(hes.allclusters)
 U =  getU.(hes.allclusters)

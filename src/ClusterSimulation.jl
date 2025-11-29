@@ -251,6 +251,18 @@ function getallY(s::clSample)
     getY.(s.allclusters) 
 end
 
+function getRegressorNoIntercept(c::clCluster)
+    c.X[:,2]
+end
+
+function checkScore(s::clSample)
+    getRegressorNoIntercept.(s.allclusters) .* getU.(s.allclusters)
+end
+
+function getU(c::clCluster)
+    c.u
+end
+
 ### SI POTREBBE FARE UN STRUCT MONTECARLO, MA PER ORA è IMPLEMENTATO COME UN SEMPLICE VETTORE QUINDI CI STA
 """
     montecarlo(p, iterations, Ng)
