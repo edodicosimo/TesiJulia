@@ -354,11 +354,16 @@ plot!(x, y, linewidth= 2, label = "White")
 ```{julia}
 betahat = bols(endoSam)[2]
 white = sqrt(whiteAvar(endoSam)[2,2])
+crve = sqrt(CRVE(endoSam)[2,2])
 histogram(montecarlo(endoPop,100,Ng,true), bins=30, label="Montecarlo")
 d = Normal(betahat, white)
-x = range(betahat - 4 * white, betahat + 4 * white; length = 400)
+D = Normal(betahat, crve)
+
+x = range(betahat - 4 * crve, betahat + 4 * crve; length = 400)
 y = pdf.(d,x)
+Y = pdf.(D,x)
 plot!(x,y, linewidth =2, label = "White")
+plot!(x,Y, linewidth =2, label = "CRVE")
 ```
 
 ## CRVE Matrix

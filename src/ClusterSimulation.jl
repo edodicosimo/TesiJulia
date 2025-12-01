@@ -356,15 +356,16 @@ function whiteAvar(s::clSample)
     inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
 end
 
-function innerBCrve(c::clCluster)
+function innerBCrve(c::clCluster, betahat::Vector{Float64})
     X = c.X
-    uhat = computeResidual(c)
+    uhat = c.y .- c.X * betahat  
     #FIXME QUA USA BETA CALCOLATO NEL CLUSTER NON IN TUTTA LA POPOLAZIONE
     X' * uhat * uhat' * X
 end
 
 function CRVE(s::clSample)
-    B = sum(innerBCrve.(s.allclusters))
+    betahat = bols(s)
+    B = sum(broadcast((c) -> innerBCrve(c,betahat), endoSam.allclusters))
     X = getallX(s)
     inv(X'*X) * B * inv(X'*X)
 end

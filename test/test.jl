@@ -145,5 +145,6 @@ endoPop = clPopulation(G, μg, beta2)
 endoSam = sample(endoPop,1000)
 S = checkScore(endoSam)
 
-bols(endoSam)
-whiteAvar(endoSam)
+bendo = bols(endoSam)
+CRVE(endoSam) .- whiteAvar(endoSam)
+
