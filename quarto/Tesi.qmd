@@ -32,7 +32,7 @@ Yes. The distribution we refer to is the distribution of $\hat{\beta}_\text{ols}
 Since $\hat{\beta}_\text{ols}$ is a function of random variables ($X_i$ and $u_i$), if we knew their full population distributions, we would know the exact value of $\beta$. But because we only observe a sample, our estimate varies from sample to sample. In this sense, $\hat{\beta}_\text{ols}$ *is* a random variable and therefore has a distribution.
 
 ### What are clustered data?
-Let's take a step back and ask ourselves what does it mean that our data are clustered? @cameron2015cluster define a cluster as a subgroup in the population such that individuals inside it has errors that are correlated. According to @imbens what matters is the correlation of $X_{i} u_{i}$. This difference arises due to the fact that in @cameron2015cluster regressors are considered non stochastic. In essence, the defining feature of a cluster is that individuals within it exhibit some form of **unobserved** correlation.  
+Let's take a step back and ask ourselves what does it mean that our data are clustered? The defining feature of a cluster is that individuals within it exhibit some form of **unobserved** correlation.  
 Suppose our sample contains $N$ individuals, each with an observed trait $X$. We can represent these as  $X_{ig} = (X_{11}, \dots, X_{N_1 1},\; X_{12}, \dots, X_{N_2 2}, \dots,\; X_{N_G G})$, where $i$ indexes individuals within a cluster and $g$ indexes the cluster.
 
 We can think of all these $X_{ig}$ as being drawn from the same population distribution, so they are **identically distributed**. Let us assume this distribution has mean $0$.  
@@ -142,6 +142,7 @@ I can then estimate $\hat{\beta}_\text{g}$ in each cluster and then broadcast it
 Each of these 
 
 ### Endogenous clusters
+The second way in which we'll simulate our data is as follow.  
 We want to simulate data such that:
 $$
 \mathbb{E}[X_{ig} u_{ig} \mid i \in \text{cluster }g] = \mu_g
@@ -233,10 +234,22 @@ histogram(mean(betahatDiff, dims = 2), bins =15)
 ```
 As can be clearly seen from @fig-clusterwisemontecarlo there is consistency across all clusters.
 
-## APE
-Since $\beta _{\text{APE}}$ is just the average of all the $\beta _{g}$, if we can consistently estimate all of them we can consistently estimate it. But what if we don't observe all clusters?
+### APE
+Since $\beta_{\text{APE}}$ is simply the average of all the $\beta_g$, if each $\beta_g$ can be consistently estimated, then $\beta_{\text{APE}}$ can also be consistently estimated. 
+But what happens if there is cluster-level endogeneity?  
+In that case, consistency is still achievable—as long as endogeneity does not arise at the population level.
+The key point is that estimating $\hat{\beta}_\text{pols}$ is equivalent to averaging the $\hat{\beta}_g$ across clusters. For each cluster we have
+$$
+\hat{\beta _{g}} \xrightarrow{p} \beta _{g} + \frac{\sum _{i \in g}S_{i}}{\sum _{i \in g}\mathbf{x_{i}'x_{i}}}
+$$
+where $S_i = X_i u_i$ is the score. Averaging this over all $G$ clusters gives:
+$$
+\hat{\beta}_\text{pols}=\frac{1}{G}\sum _{g}\hat{\beta_{g}}\xrightarrow{p}\beta _{\text{APE}}+ \frac{\sum _{g}\sum _{i \in g}S_{i}}{\sum _{g}\sum _{i \in g}\mathbf{x_{i}'x_{i}}}
+$$
+As long as we observe all clusters, the numerator of the second term is equal to $0$, and the estimator is therefore consistent.
 
-## Consistency as $N_{g} \xrightarrow{p} \infty$
+
+### Consistency as $N_{g} \xrightarrow{p} \infty$
 We want to test wether our estimate of the average partial effect gets better if the number of people that we draw in each cluster increases. In order to do so we ran a series of montecarlo simulation increasing $N_{g}$.
 ```{julia}
 #| output: false
@@ -320,15 +333,6 @@ d = Normal(betahat, sigma)
 y = pdf.(d, x)
 
 plot!(x, y, linewidth= 2, label = "White")
-
-
-sdcrve = sqrt(CRVE(sam)[2,2])
-
-crve = Normal(betahat,sdcrve)
-
-c = pdf.(crve,x)
-
-plot!(x,c,linewidth = 2, label="crve")
 ```
 
 
@@ -521,11 +525,9 @@ $$
 \;\overset{p}{\longrightarrow}\;
 \mathbb{E}\!\left[ \mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g \right]
 $$
->[!question]
->- In which way are we taking into account cluster correlation? show it better
->-
 
-## Difference from White
+
+### Difference from White
 Let's look at the difference between the White covariance matrix and the CRVE. Imagine we have a cluster of 2 observations, the White inner matrix would like this: 
 $$
 B_{\text{W}}=

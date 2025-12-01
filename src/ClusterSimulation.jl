@@ -195,7 +195,7 @@ Aggregates all regressors via `getallX(s)` and all outcomes via `getallY(s)` bef
 """
 function bols(s::clSample)
     X = getallX(s)
-    Y = vcat(getallY(s)...)
+    Y = reduce(vcat, getallY(s))
     betahat = inv(X' * X) * (X'Y)
 end
 
@@ -335,6 +335,11 @@ function computeResidual(c::clCluster)
     c.y .- c.X * betahat 
 end
 
+function computeResidual(s::clSample)
+    betahat = bols(s)
+    reduce(vcat,getallY(s)) .- getallX(s) * betahat
+end
+
 
 function WhiteAvar(c::clCluster)
     uhat = computeResidual(c)
@@ -343,7 +348,7 @@ function WhiteAvar(c::clCluster)
 end
 
 function whiteAvar(s::clSample)
-    uhat = reduce(vcat,computeResidual.(s.allclusters)) #vettore di vettori
+    uhat = computeResidual(s)
     X = getallX(s)
     inv(X' *  X) * X' * Diagonal(uhat .^ 2) * X * inv(X' *  X)
 end
