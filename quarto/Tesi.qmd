@@ -135,11 +135,11 @@ The constructor returns a population struct that stores the cluster-level parame
 ```{julia}
 sam = sample(pop, Ng)
 ```
-This line generates a sample from the population.  
+The line above generates a sample from the population.  
 - **`Ng`** is the number of observations per cluster.    
 The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.  
- $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates.  
-
+I can then estimate $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates.  
+Each of these 
 ## Het 
 There are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.
 $$
@@ -218,6 +218,49 @@ function bols(s::clSample)
 	betahat = inv(X' * X) * (X'Y)
 end
 ```
+## Consistency
+We can discuss two way in which our estimator can be consistent, the first one is that:
+$$
+\boldsymbol{\hat{\beta_{g}}}\xrightarrow{p}\boldsymbol{\beta_{g}}
+$$
+meaning that each of the $G$ estimated parameters is consistent for its counterpart in the population.
+This would require that the expected value of the score is $0$ in all clusters, i.e. no cluster-level endogeneity.
+The second way in which our estimator may be consistent is that:
+$$
+\hat{\beta}_\text{pols} \xrightarrow{p}\beta _{\text{APE}}
+$$
+For this to be the case we only need population exogeneity.  
+
+### First consistency check
+We will now use a Montecarlo method to test wether we can get a consistent estimate of the $G$ parameters if there is no cluster endogeneity.
+We will estimate the following model:
+$$
+\mathbf{y}=\mathbf{X}_{g}\boldsymbol{\hat{\beta}}_{Ng}+\mathbf{u}_{g}
+$$
+Where $\boldsymbol{\hat{\beta}_{g}}= \begin{bmatrix}\alpha _{g} \\ \beta _{g}\end{bmatrix}$.
+Adding a cluster-specific intercept lets the model absorb cluster-level fixed effects in the residuals.  
+
+```{julia}
+#| echo: true
+#| label: fig-allclustersconsistency
+#| fig-cap: "HIstogram of the difference between the estimated parameters and the true one in all clusters"
+
+histogram(
+    permutedims(stack(bols.(sam.allclusters)))[:,2] - β,
+    bins = 15
+    )
+```
+In @fig-allclustersconsistency we can see a plot of the difference between the estimated value for $\beta_g$ and the true value, it is clear from the graph that all the estimated parameters are consistent for their population counterpart.
+Now we'll run a Montecarlo simulation, with 100 iterations, we will simulate for each iteration 50 clusters of 100 people and compute $\hat{\beta}_g$ for each cluster. 
+We will then compute the mean across simulation of the difference between the estimated $\beta_g$ and the true paramenter.
+```{julia}
+#| label: fig-clusterwisemontecarlo
+#| fig-cap: Histogram of the mean difference between estimated and true parameters across simulation in the montecarlo experiment  
+betahatDiff = montecarloClusterWise(pop,100,100) .- β
+histogram(mean(betahatDiff, dims = 2), bins =15)
+```
+As can be clearly seen from @fig-clusterwisemontecarlo there is consistency across all clusters.
+
 ## Consistency as $N_{g} \xrightarrow{p} \infty$
 We want to test wether our estimate of the average partial effect gets better if the number of people that we draw in each cluster increases. In order to do so we ran a series of montecarlo simulation increasing $N_{g}$.
 ```{julia}

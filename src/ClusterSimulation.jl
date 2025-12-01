@@ -296,6 +296,15 @@ function montecarlo(p::Population, iterations::Int64, Ng::Int64)
     return (mean(getBeta(b)), std(getBeta(b)))
 end
 
+function montecarloClusterWise(p::Population, iterations::Int64, Ng::Int64)
+    v = fill(p,iterations)
+    s = getAllClusters.(sample.(v,Ng))
+    b = broadcast((a)->bols.(a),s)
+    stack(getBeta.(b))
+end
+function getAllClusters(s::clSample)
+    s.allclusters
+end
 function consistencyNg(p::hePopulation)
     v = vcat(collect(1:5:50), collect(50:10:250),collect(250:100:1000))
     l = length(v)
@@ -348,4 +357,4 @@ end
 
 function getBeta(a::Vector{Vector{Float64}})
     permutedims(stack(a))[:,2]
-end
+end 

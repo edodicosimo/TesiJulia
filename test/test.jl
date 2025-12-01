@@ -68,7 +68,7 @@ innerBCrve(ccc)
 
 (montecarlo(hep,1000,100))
 
-permutedims(stack(bols.(hes.allclusters)))[:,2]
+histogram(permutedims(stack(bols.(hes.allclusters)))[:,2] - beta1)
 
 df = consistencyNg(hep)
 
@@ -119,3 +119,17 @@ histogram(
     mean.(broadcast((x,u) -> x .* u, X,U)),
     bins=50
     )
+
+
+#  MONTECARLO DEI BETAG
+betahatClusterWise = montecarloClusterWise(hep,1000,1000)
+
+
+@time montecarloClusterWise(hep, 100, 500)
+
+histogram(mean(betahatClusterWise, dims=2))
+std(betahatClusterWise, dims=2)
+
+diffbeta = betahatClusterWise .- beta1
+histogram(mean(diffbeta,dims=2))
+beta1
