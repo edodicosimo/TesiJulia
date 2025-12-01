@@ -261,6 +261,9 @@ histogram(mean(betahatDiff, dims = 2), bins =15)
 ```
 As can be clearly seen from @fig-clusterwisemontecarlo there is consistency across all clusters.
 
+## APE
+Since $\beta _{\text{APE}}$ is just the average of all the $\beta _{g}$, if we can consistently estimate all of them we can consistently estimate it. But what if we don't observe all clusters?
+
 ## Consistency as $N_{g} \xrightarrow{p} \infty$
 We want to test wether our estimate of the average partial effect gets better if the number of people that we draw in each cluster increases. In order to do so we ran a series of montecarlo simulation increasing $N_{g}$.
 ```{julia}
@@ -284,3 +287,268 @@ plot(
 )
 ```
 What we see in @fig-cons is the result of the montecarlo simulation, the line is the average estimates for each $N_{g}$, while the shaded area is the standard deviation, we can clearly see from the graph that as the number of observations inside a cluster grows $\hat{\beta}_\text{ols}\xrightarrow{p}\beta _{\text{APE}}$.
+
+## Variance Estimation
+In each cluster we have that 
+$$
+\hat{\beta _{g}} \xrightarrow{p} \beta _{g} + \frac{\sum _{i \in g}S_{i}}{\sum _{i \in g}\mathbf{x_{i}'x_{i}}}
+$$
+Where $S_{i}$ is the score $X_{i}u_{i}$. 
+$$
+\left(\hat{\beta_{g}}-\beta_{g}\right)\xrightarrow{d}\mathcal{N}(0, V_{g})
+$$
+$$
+V_{g} = \sum _{i \in g}\mathbf{x_{i}'x_{i}} \left( \operatorname{Var}\left( \sum _{i \in g}S_{i} \right)\right)\sum _{i \in g}\mathbf{x_{i}'x_{i}} 
+$$
+Since inside each cluster observations can be considered i.i.d. 
+$$
+\operatorname{Var}\left( \sum _{i \in g} S_{i} \right)= \sum _{i \in g}\operatorname{Var}\left( Si \right)
+$$
+The variance is then
+$$
+\mathbb{E} \left( S_{ig}^{2} \right) - \left[ \mathbb{E}\left( S_{ig} \right) ^{2} \right] 
+$$
+Now if we want to estimate $\beta _{\text{APE}}$ we note that it is equal to the average across $G$ of the various $\beta_{g}$, and since the vaious $\hat{\beta_{g}}$ are independent, the variance of their mean will be the mean of their variances.
+$$
+\sum _{g} \left(\hat{\beta_{g}}-\beta_{g}\right) = \hat{\beta}_\text{pols} - \beta _{\text{APE}} \overset{a}{\sim} \mathcal{N} \left( 0, \frac{1}{G}\sum _{g}\operatorname{Var}\left( \hat{\beta_{g}} \right) \right)  
+$$
+As noted before if we have enough clusters:
+$$
+\sum _{g}\sum _{i \in g} S_{i} \xrightarrow{p} \mathbb{E}_{g}\left(S_{ig}\right)=0
+$$
+So we get a consistent estimate even if there is cluster level endogeneity. But this not apply to the variance.
+That is because
+$$
+\sum _{g}\sum _{i \in g} S_{i}^{2} \xrightarrow{p} \mathbb{E}_{g}\left(S_{ig}\right)\ne 0
+$$
+So that there is not averaging out across clusters that make the second term disappear.
+This means that the asymptotic variance of $\hat{\beta}_{\text{pols}}$ will be different depending on wether there is cluster-level endogeneity or not, and the difference will be equals to:
+$$
+V_{\text{endo}} - V _{\text{exo}} = \frac{ \mathbb{E}_{g}(\mu _{g}^{2})}{{\sum _{i}\mathbf{x_{i}'x_{i}}}}
+$$
+
+## CRVE Matrix
+
+### Notation
+We use the same notation as in [@cameron2015cluster]:
+$$
+\mathbf{X_{ig}}=
+\begin{bmatrix}
+x_{1ig}, &  x_{2ig}, &  \dots  & x_{kig} 
+\end{bmatrix}
+$$
+$$
+\mathbf{X_{g}}= \begin{bmatrix}
+\mathbf{X_{ig}} \\
+\mathbf{X_{jg}} \\  
+\dots  \\
+\mathbf{X_{N_{g}g}}
+\end{bmatrix} = 
+\begin{bmatrix}
+x_{1ig}, &  x_{2ig}, &  \dots  & x_{kig}  \\
+x_{1ij}, &  x_{2jg}, &  \dots  & x_{kjg}  \\
+\dots \\
+x_{1N_{g}g}, &  x_{2N_{g}g}, &  \dots  & x_{kN_{g}g} 
+\end{bmatrix}
+$$
+$$
+\mathbf{X} =
+\begin{bmatrix}
+\mathbf{X_{ig}} \\
+\mathbf{X_{jg}} \\
+\dots \\
+\mathbf{X_{N_{g}g}} \\
+\\
+\mathbf{X_{ih}} \\
+\mathbf{X_{jh}} \\
+\dots \\
+\mathbf{X_{N_{h}h}} \\
+\\
+\dots \\
+\\
+\mathbf{X_{iG}} \\
+\mathbf{X_{jG}} \\
+\dots \\
+\mathbf{X_{N_{G}G}}
+\end{bmatrix}
+$$
+---
+
+The idea behind CRVE is that clusters are independent one from the other. Since inference requires independence across a big number of units, we base it on the number of clusters rather than the number of individuals. Assuming that $\mathbb{E}\left[ \mathbf{X'_{g}u_{g}} \right]=0$, $\hat{\beta}_\text{ols}$ will be a consistent estimator of the population parameter $\beta$ if $G \to \infty$ [@wooldridge2010econometric]. To understand this note that computing $\beta$:
+$$
+\left( X'X \right)^{-1}\left( X'y \right) 
+$$
+is the same as doing: 
+$$
+\hat{\boldsymbol{\beta}}_\text{ols} = \left( \sum_{g}^{G}\mathbf{X_{g}}'\mathbf{X_{g}}  \right)^{-1}\left( \sum_{g}^{G}\mathbf{X_{g}'y_{g}} \right) 
+$$
+so 
+$$
+\left( \hat{\boldsymbol{\beta}}_\text{ols} -\boldsymbol{\beta} \right) = \left(  \frac{1}{G}\sum_{g}^{G}\mathbf{X_{g}}'\mathbf{X_{g}}  \right)^{-1}\left( \frac{1}{G}\sum_{g}^{G}\mathbf{X_{g}'u_{g}} \right)
+$$
+and applying the Weak Law of Large Numbers @wooldridge2010econometric
+$$
+\frac{1}{G}\sum_{g}^{G}\mathbf{X_{g}'u_{g}} \xrightarrow{p} \mathbb{E}\left[ \mathbf{X'_{g}u_{g}} \right]=0
+$$
+so $\hat{\boldsymbol{\beta}}_\text{ols}$ will be consistent.
+Now let us derive it's asymptotic distribution:
+$$
+\sqrt{ G } \left( \hat{\boldsymbol{\beta}}_\text{ols} -\boldsymbol{\beta} \right) = \left(  \frac{1}{G}\sum_{g}^{G}\mathbf{X_{g}}'\mathbf{X_{g}}  \right)^{-1}\left( \frac{1}{\sqrt{ G }}\sum_{g}^{G}\mathbf{X_{g}'u_{g}} \right)
+$$
+The first term is by assumption $A^{-1} + o_{p}(1)$, while the second is $\overset{a}{\sim} \mathcal{N}\left( 0, \mathbb{E}[\mathbf{X_{g}'u_{g}u_{g}'X_{g}}] \right)$
+So 
+$$
+\sqrt{ G } \left( \hat{\boldsymbol{\beta}}_\text{ols} -\boldsymbol{\beta} \right) \xrightarrow{d} \mathcal{N} \left( 0, A^{-1}\mathbb{E}[\mathbf{X_{g}'u_{g}u_{g}'X_{g}}]A^{-1} \right) 
+$$
+
+### Formula
+
+$$
+\hat{V}_\text{clu} \hat{\mathbf{\beta}} = \left( \mathbf{X'X} \right)^{-1} \mathbf{B} \left(  \mathbf{X'X} \right)^{-1} = \left( \mathbf{X'X} \right)^{-1} \left(  \sum_{g=1}^{G}\mathbf{X}_{g}'\hat{\mathbf{u}}_{g}\hat{\mathbf{u}}_{g}'\mathbf{X}_{g }  \right) \left(  \mathbf{X'X} \right)^{-1}
+$$
+
+Define:
+$$
+\mathbf{s_g}\equiv\mathbf{X_{g}}' \mathbf{\hat u_{g}} =
+\begin{bmatrix}
+X_{1 1 g} & X_{1 2 g} & \cdots & X_{1 N_g g} \\
+X_{2 1 g} & X_{2 2 g} & \cdots & X_{2 N_g g} \\
+\vdots    & \vdots    & \ddots & \vdots      \\
+X_{k 1 g} & X_{k 2 g} & \cdots & X_{k N_g g}
+\end{bmatrix}
+\begin{bmatrix}
+\hat u_{1 g} \\
+\hat u_{2 g} \\
+\vdots       \\
+\hat u_{N_g g}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\displaystyle \sum_{i=1}^{N_g} X_{1 i g}\, \hat u_{i g} \\
+\displaystyle \sum_{i=1}^{N_g} X_{2 i g}\, \hat u_{i g} \\
+\vdots \\
+\displaystyle \sum_{i=1}^{N_g} X_{k i g}\, \hat u_{i g}
+\end{bmatrix}
+$$
+
+Then:
+
+$$
+\mathbf{s_g s_g}' 
+= (X_g' {u}_g)(X_g' {u}_g)' 
+= X_g' {u}_g {u}_g' X_g
+$$
+
+$$
+\mathbf{s_g s_g}' = 
+\begin{bmatrix}
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{1 i g} X_{1 j g} \hat u_{i g} \hat u_{j g} &
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{1 i g} X_{2 j g} \hat u_{i g} \hat u_{j g} &
+\cdots &
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{1 i g} X_{k j g} \hat u_{i g} \hat u_{j g} \\[6pt]
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{2 i g} X_{1 j g} \hat u_{i g} \hat u_{j g} &
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{2 i g} X_{2 j g} \hat u_{i g} \hat u_{j g} &
+\cdots &
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{2 i g} X_{k j g} \hat u_{i g} \hat u_{j g} \\
+\vdots & \vdots & \ddots & \vdots \\[6pt]
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{k i g} X_{1 j g} \hat u_{i g} \hat u_{j g} &
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{k i g} X_{2 j g} \hat u_{i g} \hat u_{j g} &
+\cdots &
+\displaystyle \sum_{i \in g} \sum_{j \in g} X_{k i g} X_{k j g} \hat u_{i g} \hat u_{j g}
+\end{bmatrix}
+$$
+
+Then we sum this over all G clusters:
+$$
+\mathbf{\hat{B}}=\sum_{g=1}^{G}\mathbf{X}_{g}'\mathbf{\hat u}_{g}\mathbf{\hat u}_{g}'\mathbf{X}_{g} =
+\begin{bmatrix}
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{2 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\cdots &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\[6pt]
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{2 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\cdots &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\
+\vdots & \vdots & \ddots & \vdots \\[6pt]
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{2 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\cdots &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g}
+\end{bmatrix}
+$$
+So what CRVE does is to compute for each cluster the outer product of $\mathbf{\hat{S}_{g}} = \mathbf{X_{g}'\hat{u}_{g}}$ with itself, and then average those matrices across clusters.    
+After pre and post-multiplication by $\bigl(\frac{1}{N}\sum_i \mathbf{x}_i\mathbf{x}_i^\prime\bigr)^{-1}$, this converges to the **asymptotic variance-covariance matrix** of the OLS estimator $\hat{\boldsymbol{\beta}}_\text{ols}$.
+
+### Convergence
+We want to show that
+$$
+\frac{1}{G}\sum_{g}
+\mathbf{X}_g^{\prime}\,\hat{\mathbf{u}}_g \hat{\mathbf{u}}_g^{\prime}\mathbf{X}_g
+\;\overset{p}{\longrightarrow}\;
+\mathbb{E}\left[ \mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g \right]
+$$
+First let's substitute for $\mathbf{\hat{u}_{g}}$:
+
+$$
+\frac{1}{G}\sum_{g}
+\mathbf{X}_g^{\prime}\bigl(\mathbf{y}_g-\mathbf{X}_g\hat{\boldsymbol{\beta}}\bigr)
+\bigl(\mathbf{y}_g-\mathbf{X}_g\hat{\boldsymbol{\beta}} \bigr)^{\prime}\mathbf{X}_g
+$$
+
+$$
+\frac{1}{G}\sum_{g}
+\mathbf{X}_g^{\prime}\bigl(\mathbf{X}_g\boldsymbol{\beta}+\mathbf{u}_g-\mathbf{X}_g\hat{\boldsymbol{\beta}}_g \bigr)
+\bigl(\mathbf{X}_g\boldsymbol{\beta}+\mathbf{u}_g-\mathbf{X}_g\hat{\boldsymbol{\beta}}_g \bigr)^{\prime}\mathbf{X}_g
+$$
+We then factor terms in order to isolate $(\beta - \hat{\beta})$
+
+$$
+\frac{1}{G}\sum_{g}
+\mathbf{X}_g^{\prime}\left[\mathbf{X}_g\bigl(\boldsymbol{\beta}-\hat{\boldsymbol{\beta}}_g \bigr)+\mathbf{u}_g \right]
+\left[\mathbf{X}_g\left(\boldsymbol{\beta}-\hat{\boldsymbol{\beta}}_g \right)+\mathbf{u}_g \right]^{\prime}\mathbf{X}_g
+$$
+As $\hat{\beta} \overset{p}{\to} \beta$, the extra terms vanish, leaving only $\mathbf{u}_g$.
+$$
+\xrightarrow{p}
+\frac{1}{G}\sum_{g}
+\mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g
+\;\overset{p}{\longrightarrow}\;
+\mathbb{E}\!\left[ \mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g \right]
+$$
+>[!question]
+>- In which way are we taking into account cluster correlation? show it better
+>-
+
+## Difference from White
+Let's look at the difference between the White covariance matrix and the CRVE. Imagine we have a cluster of 2 observations, the White inner matrix would like this: 
+$$
+B_{\text{W}}=
+\begin{bmatrix}
+\hat{u_{1}}^{2} & 0  \\
+0 & \hat{u_{2}^{2}}  \\
+\end{bmatrix}
+$$
+While the CRVE would look like this:
+$$
+B_{\text{C}}=
+\begin{bmatrix}
+\hat{u}_1^2 & \hat{u}_1 \hat{u}_2 & \hat{u}_1 \hat{u}_3 \\
+\hat{u}_1 \hat{u}_2  & \hat{u}_2^2          & \hat{u}_2 \hat{u}_3 \\
+\hat{u}_1 \hat{u}_3  & \hat{u}_2 \hat{u}_3  & \hat{u}_3^2
+\end{bmatrix}
+$$
+So when I then pre and post multiply by $X$:
+$$
+X'B_{\text{W}}X = x_{1}^{2}u_{1}^{2}+ x_{2}^{2}u_{2}^{2}=\sum _{i}x_{i}^{2}u_{i}^{2}
+$$
+$$
+X'B_{\text{C}}X= x_1^2 \hat{u}_1^{2}
++ x_2^2 \hat{u}_2^{2}
++ x_3^2 \hat{u}_3^{2}
++ 2 \left(
+x_1 x_2 \hat{u}_1 \hat{u}_2
++ x_1 x_3 \hat{u}_1 \hat{u}_3
++ x_2 x_3 \hat{u}_2 \hat{u}_3
+\right) = X'B_{\text{W}}X +2 \sum _{i}\sum _{\ne j}x_{i}x_{j}\hat{u_{i}}\hat{u_{j}}
+$$

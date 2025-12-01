@@ -133,3 +133,6 @@ std(betahatClusterWise, dims=2)
 diffbeta = betahatClusterWise .- beta1
 histogram(mean(diffbeta,dims=2))
 beta1
+
+montecarlo(clp,100,100) 
+montecarlo(hep,100,100)
