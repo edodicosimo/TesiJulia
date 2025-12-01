@@ -192,10 +192,17 @@ $$
 Let us now check that the expected valure of the score is 0 in the whole population but not in each clusters.  
 ```{julia}
 beta2 = 2
-endoPop = clPopulation(G, randn(G), beta2)
+μg = rand(Normal(0,4),G)
+endoPop = clPopulation(G, μg, beta2)
 endoSam = sample(endoPop,1000)
-checkScore(endoSam)
+S = checkScore(endoSam)
 ```
+The above is the score in each cluster, now let's check te mean and variance.
+```{julia}
+mean(S), var(S)
+```
+We can see that the mean is close to $0$ and the variance is close to the expected variance of $\mu_g$.
+<!-- TODO add montecarlo to check if the score gets closer to 0 when G increase -->
 
 ## Consistency
 We can discuss two way in which our estimator can be consistent, the first one is that:
