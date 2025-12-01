@@ -113,7 +113,7 @@ First we draw a random vector $\boldsymbol{\beta_{g}}$ from a normal distributio
 ```{julia}
 include("../src/ClusterSimulation.jl")
 G = 50 #Number of clusters 
-Ng = 100 # Number of individuals per cluster
+Ng = 500 # Number of individuals per cluster
  
 β = rand(Normal(2,4),G)
 ```
@@ -140,84 +140,56 @@ The line above generates a sample from the population.
 The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.  
 I can then estimate $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates.  
 Each of these 
-## Het 
-There are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.
+
+### Endogenous clusters
+We want to simulate data such that:
 $$
-y_{ig} = \alpha + \beta_g X_{ig} + u_{ig}
-$$ {#eq-model}
-assume $u_{ig}$ has a cluster component and an individual-and-cluster component:
+\mathbb{E}[X_{ig} u_{ig} \mid i \in \text{cluster }g] = \mu_g
 $$
-u_{ig}= c_{g}+v_{ig}
+for each cluster $g$, and
+
 $$
-Where $v_{ig} \sim (0,\sigma^{2}_{v})$, $c_{g} \sim (0,\sigma^{2}_{c})$ but of course $c_{g}$ varies only at the cluster level.  
-In this way the expected value of the error given that individual $i$ is in cluster $g$ is:
+\mathbb{E}[X_{ig} u_{ig}] 
+= \mathbb{E}\big[\mathbb{E}[X_{ig} u_{ig} \mid i \in \text{cluster }g]\big] 
+= \mathbb{E}[\mu_g] 
+= 0
 $$
-\mathbb{E_{g}}(u_{ig})= c_{g}  
+Across all clusters, the overall expectation is zero because $\mu_g$ has mean zero.
+We first draw from a normal distribution $\mathcal{N}\left( 0, \sigma_{\mu}^2 \right)$ a vector $\boldsymbol{\mu}$ of length $G$, with all the cluster's mean $\mu_{g}$. Note that in doing so we are taking a sample of size $G$ from a theoretically infinite population of clusters. Then we:  
+1. Draw two i.i.d. standard normal variables:$$
+   Z_1 \sim \mathcal{N}(0,1), \quad Z_2 \sim \mathcal{N}(0,1)
+   $$
+   $Z_{1}$ and $Z_{2}$ are zero-mean and independent. The covariance between $X$ and $u$ will come entirely from the shared $Z_1$ component.  
+2. Construct within each cluster $g$:$$
+   X_{g} = s_g \, Z_1
+   $$$$
+   u_{g} = a_g \, Z_1 + b_g \, Z_2
+   $$
+$a_g$ controls the strength of the correlation within the cluster, $b_{g}$ let $u$ have positive variance. 
 $$
-But as long as we have an intercept we can assume w.l.o.g that $\mathbb{E}\left[u_{ig} \right]=0$.
-If I estimate $\hat{\beta}_\text{ols}$ inside cluster $g$, I get:
+   a_g = \frac{\mu_g}{s_g}, \qquad
+   b_g = \sqrt{s_g^2 - a_g^2}.
+   $$
+To make sure that $b_{g}$ exist and is positive we need $s_g^4 \ge \mu_g^2$. So we choose: 
 $$
-\left( \hat{\beta_{g}} - \beta_{g} \right) = \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}\left( \sum_{i \in g}X_{i}u_{i} \right)  
+s_g^2 = |\mu_g| + v_0 \quad \text{with } v_0 > 0
 $$
-And:
+So that:
 $$
-\hat{\beta}_\text{g} \overset{a}{\sim} \mathcal{N}\left( \beta_{g}, \frac{1}{N_{g}} \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}B\left(  \sum_{i \in g}X_{i}^{2}\right)^{-1} \right) 
+\mathbb{E}[X \mid g] = \mathbb{E}[u \mid g] = 0
 $$
-where $B_{g}$ is:
+and
 $$
-B_{g} = \operatorname{Var}\left( X_{ig}u_{ig} \right)
+\mathbb{E}[X u \mid g] = \operatorname{Cov}(X,u \mid g) = s_g \, a_g = \mu_g.
+$$
+We then compute $Y_{ig}$  choosing a value for $\beta$.
+$$
+Y_{ig} = X_{ig}\beta+u_{ig}
 $$
 
-If I estimate $\beta$ across G clusters I get a vector of $G$ $\hat{\beta}_\text{g}$, and for each of these I can consistently estimate an asymptotic variance using White variance estimator since observation inside a cluster are i.i.d. 
-Since a linear combination of normal is itself normal I can average out those variances and get an estimate of the Avar of $\hat{\beta}_\text{ols}$.
-
-To test this let us simulate a dataset, first we draw a random vector of betas from a normal distribution with mean 2 and variance 4.
-
-```{julia}
-include("../src/ClusterSimulation.jl")
-G = 50 #Number of clusters 
-Ng = 1000 # Number of individuals per cluster
- 
-β = rand(Normal(2,4),G)
-```
 
 
-Then we use each of these betas to simulate a cluster according to the model in @eq-model
-```{julia}
-pop = hePopulation(G,β,randn(G))
-```
-This line creates a heterogeneous-effects population.  
-- **`G`** is the number of clusters.  
-- **`β`** is the vector of betas.  
-- **`randn(G)`** produces the vector $c_{g} \sim \mathcal{N}\left( 0,1 \right)$.  
-The constructor returns a population struct that stores the cluster-level parameters used later to simulate data.
-```{julia}
-sam = sample(pop, Ng)
-```  
-This line generates a sample from the population.  
-- **`Ng`** is the number of observations per cluster.  
-The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.  
-The sample struct has a field `allclusters` that is an array of cluster structs, so we can define a function that compute $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates. 
-```{julia}
-betahat = permutedims(stack(bols.(sam.allclusters)))[:,2]
-```
-And similarly define a function that compute the White Variance estimator and broadcast it to all clusters.
-```{julia}
-WhiteAvar.(sam.allclusters)
-```
-We are interested in the average across clusters of $\beta_{g}$, the average partial effect. Note that since we have a finite amount of clusters, each of them with the same size, the APE would be:
-$$
-\beta _{\text{APE}}\frac{1}{G}\sum _{g}\beta _{g} 
-$$
-Note that doing $\frac{1}{G}\sum _{g}\hat{\beta}_\text{g}$ is the same as computing $\hat{\beta}_\text{ols}$ in the whole sample.
-We define a function to do so:
-```{julia}
-function bols(s::clSample)
-	X = getallX(s)
-	Y = vcat(getallY(s)...)
-	betahat = inv(X' * X) * (X'Y)
-end
-```
+
 ## Consistency
 We can discuss two way in which our estimator can be consistent, the first one is that:
 $$
@@ -326,6 +298,39 @@ This means that the asymptotic variance of $\hat{\beta}_{\text{pols}}$ will be d
 $$
 V_{\text{endo}} - V _{\text{exo}} = \frac{ \mathbb{E}_{g}(\mu _{g}^{2})}{{\sum _{i}\mathbf{x_{i}'x_{i}}}}
 $$
+
+### All G and no endo
+So if there is no endogeneity i can consistently estimate the AVar of each $\hat{\beta_{g}}$ using White variance estimator, let's test this using the montecarlo method.
+
+
+```{julia}
+meanbeta, sdbeta = montecarlo(pop,1000,Ng)
+D = Normal(meanbeta,sdbeta)
+
+x = range(meanbeta - 4*sdbeta,meanbeta + 4*sdbeta; length = 400)
+j = pdf.(D,x)
+
+plot(x,j, linewidth=2, label="Montecarlo")
+
+betahat = bols(sam)[2]
+sigma =   sqrt(whiteAvar(sam)[2,2])
+
+d = Normal(betahat, sigma)
+
+y = pdf.(d, x)
+
+plot!(x, y, linewidth= 2, label = "White")
+
+
+sdcrve = sqrt(CRVE(sam)[2,2])
+
+crve = Normal(betahat,sdcrve)
+
+c = pdf.(crve,x)
+
+plot!(x,c,linewidth = 2, label="crve")
+```
+
 
 ## CRVE Matrix
 

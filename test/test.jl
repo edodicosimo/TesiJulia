@@ -63,7 +63,7 @@ ccc = hes.allclusters[1]
 computeResidual(ccc)
 WhiteAvar(ccc)
 computeExpectedSig.(hes.allclusters)
-stack(WhiteAvar.(hes.allclusters))
+mean(WhiteAvar.(hes.allclusters))
 innerBCrve(ccc)
 
 (montecarlo(hep,1000,100))

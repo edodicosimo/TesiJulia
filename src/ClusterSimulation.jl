@@ -290,10 +290,14 @@ A struct containing as the first element the mean of the OLS estimates produced 
 
 Internally replicates the population `p`, draws a sample for each replication, and applies `bols` to each simulated sample.
 """
-function montecarlo(p::Population, iterations::Int64, Ng::Int64)
+function montecarlo(p::Population, iterations::Int64, Ng::Int64, allbeta::Bool=false)
     v = fill(p,iterations)
     b = bols.(sample.(v,Ng))
-    return (mean(getBeta(b)), std(getBeta(b)))
+    if allbeta
+        return getBeta(b)
+    else
+        return (mean(getBeta(b)), std(getBeta(b)))
+    end
 end
 
 function montecarloClusterWise(p::Population, iterations::Int64, Ng::Int64)
@@ -330,6 +334,7 @@ function computeResidual(c::clCluster)
     betahat = bols(c)
     c.y .- c.X * betahat 
 end
+
 
 function WhiteAvar(c::clCluster)
     uhat = computeResidual(c)
