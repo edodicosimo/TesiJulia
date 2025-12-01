@@ -27,10 +27,11 @@ hes = sample(hep,1000)
     end
 end
 
-
 beta2 = 2
-clp = clPopulation(50, randn(50), beta2)
+mug = rand(Normal(0,4),500)
+clp = clPopulation(500, mug, beta2)
 cls = sample(clp,1000)
+
 
 @testset "cl Test" begin
     @testset "Simulation test" begin

@@ -132,9 +132,9 @@ A `clCluster` object containing:
 Internally constructs `Xig` and `uig` via transformations of standard normal draws and builds the implied DGP for `y_ig`.
 """
 function simulateclCluster(mu_g::Float64, Ng::Int64, β::Float64)
-    s = sqrt.(abs.(mu_g.+10)) #questo 10 qua è v_0
+    s = sqrt.(abs.(mu_g).+10) #questo 10 qua è v_0
     a = mu_g ./ s
-    b = max.(s .^ 2 .- a.^2, 0)
+    b = sqrt.(max.(s .^ 2 .- a.^2, 0))
     Z1 = randn(Ng)
     Z2 = randn(Ng)
     Xig = [ones(Ng) s .* Z1]
@@ -266,7 +266,10 @@ function getRegressorNoIntercept(c::clCluster)
 end
 
 function checkScore(s::clSample)
-    getRegressorNoIntercept.(s.allclusters) .* getU.(s.allclusters)
+    X = getRegressorNoIntercept.(s.allclusters)
+    U = getU.(s.allclusters)
+    Ng = length(s.allclusters[1].X)
+    broadcast((x,u)->x'*u / Ng,X,U)
 end
 
 function getU(c::clCluster)
