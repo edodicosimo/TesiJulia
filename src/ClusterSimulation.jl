@@ -359,6 +359,7 @@ end
 function innerBCrve(c::clCluster)
     X = c.X
     uhat = computeResidual(c)
+    #FIXME QUA USA BETA CALCOLATO NEL CLUSTER NON IN TUTTA LA POPOLAZIONE
     X' * uhat * uhat' * X
 end
 

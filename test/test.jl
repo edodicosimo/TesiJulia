@@ -137,3 +137,13 @@ beta1
 
 montecarlo(clp,100,100) 
 montecarlo(hep,100,100)
+
+G = 50
+beta2 = 2
+μg = rand(Normal(0,4),G)
+endoPop = clPopulation(G, μg, beta2)
+endoSam = sample(endoPop,1000)
+S = checkScore(endoSam)
+
+bols(endoSam)
+whiteAvar(endoSam)

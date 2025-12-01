@@ -217,7 +217,7 @@ $$
 $$
 For this to be the case we only need population exogeneity.  
 
-### First consistency check
+### Montecarlo without endogeneity
 We will now use a Montecarlo method to test wether we can get a consistent estimate of the $G$ parameters if there is no cluster endogeneity.
 We will estimate the following model:
 $$
@@ -325,11 +325,13 @@ $$
 V_{\text{endo}} - V _{\text{exo}} = \frac{ \mathbb{E}_{g}(\mu _{g}^{2})}{{\sum _{i}\mathbf{x_{i}'x_{i}}}}
 $$
 
-### All G and no endo
+### All cluster observed and no endogeneity
 So if there is no endogeneity i can consistently estimate the AVar of each $\hat{\beta_{g}}$ using White variance estimator, let's test this using the montecarlo method.
 
 
 ```{julia}
+#| fig-cap: "Consistency of White Variance estimator without cluster level endogeneity"
+#| label: fig-montecarlowhitenoend
 meanbeta, sdbeta = montecarlo(pop,1000,Ng)
 D = Normal(meanbeta,sdbeta)
 
@@ -348,6 +350,16 @@ y = pdf.(d, x)
 plot!(x, y, linewidth= 2, label = "White")
 ```
 
+@fig-montecarlowhitenoend 
+```{julia}
+betahat = bols(endoSam)[2]
+white = sqrt(whiteAvar(endoSam)[2,2])
+histogram(montecarlo(endoPop,100,Ng,true), bins=30, label="Montecarlo")
+d = Normal(betahat, white)
+x = range(betahat - 4 * white, betahat + 4 * white; length = 400)
+y = pdf.(d,x)
+plot!(x,y, linewidth =2, label = "White")
+```
 
 ## CRVE Matrix
 
@@ -482,23 +494,27 @@ $$
 
 Then we sum this over all G clusters:
 $$
-\mathbf{\hat{B}}=\sum_{g=1}^{G}\mathbf{X}_{g}'\mathbf{\hat u}_{g}\mathbf{\hat u}_{g}'\mathbf{X}_{g} =
+\mathbf{\hat{B}}=
 \begin{bmatrix}
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
-\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{2 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{3 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \cdots &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\[6pt]
+
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
-\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{2 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{3 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \cdots &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\
+
 \vdots & \vdots & \ddots & \vdots \\[6pt]
+
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
-\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{2 j g}\,\hat u_{i g}\,\hat u_{j g} &
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{3 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \cdots &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g}
 \end{bmatrix}
 $$
+
 So what CRVE does is to compute for each cluster the outer product of $\mathbf{\hat{S}_{g}} = \mathbf{X_{g}'\hat{u}_{g}}$ with itself, and then average those matrices across clusters.    
 After pre and post-multiplication by $\bigl(\frac{1}{N}\sum_i \mathbf{x}_i\mathbf{x}_i^\prime\bigr)^{-1}$, this converges to the **asymptotic variance-covariance matrix** of the OLS estimator $\hat{\boldsymbol{\beta}}_\text{ols}$.
 
@@ -572,3 +588,5 @@ x_1 x_2 \hat{u}_1 \hat{u}_2
 + x_2 x_3 \hat{u}_2 \hat{u}_3
 \right) = X'B_{\text{W}}X +2 \sum _{i}\sum _{\ne j}x_{i}x_{j}\hat{u_{i}}\hat{u_{j}}
 $$
+
+
