@@ -364,7 +364,6 @@ y = pdf.(d,x)
 Y = pdf.(D,x)
 plot!(x,y, linewidth =2, label = "White")
 plot!(x,Y, linewidth =2, label = "CRVE")
-#FIXME capisci perche questo grafico non ha senso
 ```
 
 ## CRVE Matrix
