@@ -293,15 +293,26 @@ A struct containing as the first element the mean of the OLS estimates produced 
 
 Internally replicates the population `p`, draws a sample for each replication, and applies `bols` to each simulated sample.
 """
-function montecarlo(p::Population, iterations::Int64, Ng::Int64, allbeta::Bool=false)
-    v = fill(p,iterations)
-    b = bols.(sample.(v,Ng))
+function montecarlo(p::Population, iterations::Int64, Ng::Int64, allbeta::Bool=false, two_stage_sampling::Bool= false)
+    v = Population[]
+    if two_stage_sampling
+        v = populationSimulationForMontecarlo(4.0,iterations,p.G,Ng,2.0)
+    else
+        v = sample.(fill(p,iterations),Ng)
+    end
+    b = bols.(v)
     if allbeta
         return getBeta(b)
     else
         return (mean(getBeta(b)), std(getBeta(b)))
     end
 end
+
+function populationSimulationForMontecarlo(sigma_mu::Float64, iterations::Int64, G::Int64,Ng::Int64, beta::Float64)
+    v = rand.(fill((Normal(0,sigma_mu)),iterations),G)
+    sample.(clPopulation.(G,v,beta),Ng)
+end
+
 
 function montecarloClusterWise(p::Population, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
@@ -359,7 +370,6 @@ end
 function innerBCrve(c::clCluster, betahat::Vector{Float64})
     X = c.X
     uhat = c.y .- c.X * betahat  
-    #FIXME QUA USA BETA CALCOLATO NEL CLUSTER NON IN TUTTA LA POPOLAZIONE
     X' * uhat * uhat' * X
 end
 

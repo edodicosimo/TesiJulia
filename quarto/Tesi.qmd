@@ -192,9 +192,9 @@ $$
 Let us now check that the expected valure of the score is 0 in the whole population but not in each clusters.  
 ```{julia}
 beta2 = 2
-μg = rand(Normal(0,4),G)
-endoPop = clPopulation(G, μg, beta2)
-endoSam = sample(endoPop,1000)
+μg = rand(Normal(0,4),500)
+endoPop = clPopulation(500, μg, beta2)
+endoSam = sample(endoPop,100)
 S = checkScore(endoSam)
 ```
 The above is the score in each cluster, now let's check te mean and variance.
@@ -335,7 +335,7 @@ So if there is no endogeneity i can consistently estimate the AVar of each $\hat
 meanbeta, sdbeta = montecarlo(pop,1000,Ng)
 D = Normal(meanbeta,sdbeta)
 
-x = range(meanbeta - 4*sdbeta,meanbeta + 4*sdbeta; length = 400)
+x = range(meanbeta - 4*sdbeta,meanbeta + 4*sdbeta; length = 1000)
 j = pdf.(D,x)
 
 plot(x,j, linewidth=2, label="Montecarlo")
@@ -355,15 +355,16 @@ plot!(x, y, linewidth= 2, label = "White")
 betahat = bols(endoSam)[2]
 white = sqrt(whiteAvar(endoSam)[2,2])
 crve = sqrt(CRVE(endoSam)[2,2])
-histogram(montecarlo(endoPop,100,Ng,true), bins=30, label="Montecarlo")
+histogram(montecarlo(endoPop,400,Ng,true,true), bins=50, label="Montecarlo")
 d = Normal(betahat, white)
 D = Normal(betahat, crve)
 
-x = range(betahat - 4 * crve, betahat + 4 * crve; length = 400)
+x = range(betahat - 4 * crve, betahat + 4 * crve; length = 1000)
 y = pdf.(d,x)
 Y = pdf.(D,x)
 plot!(x,y, linewidth =2, label = "White")
 plot!(x,Y, linewidth =2, label = "CRVE")
+#FIXME capisci perche questo grafico non ha senso
 ```
 
 ## CRVE Matrix
