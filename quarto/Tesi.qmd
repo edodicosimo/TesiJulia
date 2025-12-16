@@ -25,8 +25,7 @@ $$
 The variance estimator that is most commonly used, the White variance estimator assumes that all the covariances in the expression above are 0, and so estimates only $\frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i})$, so it would not consistently estimate the asymptotic variance. 
 
 ### Why we estimate $\operatorname{Var}\left(\hat{\beta}  \right)$
-To follow what comes next, it is essential to clarify **what we are actually estimating** when we estimate the variance of  
-$\hat{\beta}_\text{ols}$. After all, $\hat{\beta}_\text{ols}$ is just a number—so what does it mean to speak of its variance?  
+To follow what comes next, it is essential to clarify **what we are actually estimating** when we estimate the variance of  $\hat{\beta}_\text{ols}$. After all, $\hat{\beta}_\text{ols}$ is just a number—so what does it mean to speak of its variance?  
 Is it a random variable? Does it have a distribution?
 Yes. The distribution we refer to is the distribution of $\hat{\beta}_\text{ols}$ **across repeated samples**, i.e., the values it would take if we changed the individuals drawn from the population.
 Since $\hat{\beta}_\text{ols}$ is a function of random variables ($X_i$ and $u_i$), if we knew their full population distributions, we would know the exact value of $\beta$. But because we only observe a sample, our estimate varies from sample to sample. In this sense, $\hat{\beta}_\text{ols}$ *is* a random variable and therefore has a distribution.
@@ -53,13 +52,25 @@ X_{g} = \{X_{i} | \text{ individual } i \in \text{ cluster } g \}
 $$
 Each cluster is a subpopulation with its own distribution, and the overall population is the mixture of all $G$ cluster distributions.
 
-### General setup
+## Literature Review  
+The starting point of this thesis is the framework proposed by Abadie, Athey, Imbens, and Wooldridge (@imbens), which reframes clustering adjustments as a problem of sampling and assignment design rather than residual correlation.
+The authors argue that the commonly used CRVE is not robust in the following sense: when clustering is not required, the CRVE does not consistently estimate the asymptotic variance of $\hat{\beta}_{\text{OLS}}$, so that using it as a precautionary default is incorrect. Moreover, they emphasize that a discrepancy between the variance estimated using White’s heteroskedasticity-robust estimator and that obtained using the CRVE does not, by itself, imply that the CRVE is the correct estimator.
+So what does?
+What the the authors claim is that cluster adjustment matters not because errors or regressors are correlated within clusters, but because of how the data are generated. 
+What drives the need for clustering adjustment is the design: either the sampling scheme, i.e. the probability of including an individual depends on the cluster she belongs to. Or the experimental design, i.e. treatment assignment itself depends on cluster membership, as in the case of region-specific policies.  
+In this sense, correlations of residuals or regressors inside clusters are neither necessary nor sufficient to justify cluster-robust adjustments.  
+They conclude that the choice between CRVE and White must depends on the estimand, not on the observed correlation. If the clusters in the sample are only a small subset of many clusters in the population, then CRVE is appropriate. If instead all clusters are observed and both treatment and sampling are i.i.d., White is correct.  
+CRVE tends to be conservative, except in special cases: when treatment effects are homogeneous, when the sample includes only a few clusters drawn from a much larger population, or when only a negligible fraction of units per cluster is sampled.  
+ 
+## General setup
 In this section, we lay out the general setup that will guide the rest of the thesis.
+We will assume the following model 
+$$
+y_{ig} = \boldsymbol{\beta}_{g}\mathbf{X}_{ig} + \boldsymbol{\gamma}\mathbf{Z}_{g}+\boldsymbol{u}_{ig} 
+$$
+So there are two groups of regressors, the one that varies only at the cluster level and the one that varies also at the individual level.
 We assume that there are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.
-$$
-y_{ig} = \alpha + \beta_g X_{ig} + u_{ig}
-$$
-
+The average across clusters of $\beta_{g}$ we will cal $\beta _{\text{APE}}$, where APE stands for Average Partial Effect.
 We model $u_{ig}$ has having a cluster component and an individual-and-cluster component:
 $$
 u_{ig}= c_{g}+v_{ig}
@@ -69,24 +80,9 @@ In this way the expected value of the error given that individual $i$ is in clus
 $$
 \mathbb{E_{g}}(u_{ig})= c_{g}
 $$
-But as long as we have an intercept that varies for each cluster we can assume w.l.o.g that $\mathbb{E}\left[ u_{ig} \right]=0$.  
-We will call $\beta_{\text{APE}}$ the average between cluster of the various $\beta_{g}$.   
-If we estimate $\beta$ separately across $G$ clusters, we obtain a vector of cluster-specific estimates  $\{\,\hat{\beta}_g\,\}_{g=1}^G$.  
-$$
-\hat{\beta_{g}} = \beta_{g}  + \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}\left( \sum_{i \in g}X_{i}u_{i} \right)  
-$$
-And:
-$$
-\hat{\beta}_\text{g} \overset{a}{\sim} \mathcal{N}\left( \beta_{g}, \frac{1}{N_{g}} \left(  \sum_{i \in g}X_{i}^{2}\right)^{-1}B\left(  \sum_{i \in g}X_{i}^{2}\right)^{-1} \right) 
-$$
-where $B_{g}$ is:
-$$
-B_{g} = \operatorname{Var}\left( X_{ig}u_{ig} \right)
-$$
-If for each cluster we could consistently estimate its asymptotic variance, we could take the average of these cluster-level estimates to obtain a consistent estimate of the asymptotic variance of the overall $\hat{\beta}_\text{pols}$, since a linear combination of normal random variables is also normal.
-But first we have to ask ourself wether each of the estimated parameters is consistent.
+This can be thought of as a cluster specific intercept, and as long as we include an intercept in our estimated model that varies for each cluster we can assume w.l.o.g that $\mathbb{E_{g}}\left[ u_{ig} \right]=0 \; \forall \; g$.  
 
-## Assumption we make
+### Assumptions we make
 We must begin by defining precisely the assumptions that we are willing make about the population.  
 The first choice is whether we treat the number of clusters as fixed and fully observed in every sample—for example, U.S. states (G = 50) when estimating the effect of a federal policy.
 Alternatively, we may assume an increasing number of clusters, where the specific clusters included can vary from sample to sample.
