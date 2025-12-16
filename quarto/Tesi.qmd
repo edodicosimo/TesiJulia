@@ -83,20 +83,19 @@ $$
 This can be thought of as a cluster specific intercept, and as long as we include an intercept in our estimated model that varies for each cluster we can assume w.l.o.g that $\mathbb{E_{g}}\left[ u_{ig} \right]=0 \; \forall \; g$.  
 
 ### Assumptions we make
-We must begin by defining precisely the assumptions that we are willing make about the population.  
+We must begin by defining precisely the assumptions that we are willing make about the data generating process.  
 The first choice is whether we treat the number of clusters as fixed and fully observed in every sample—for example, U.S. states (G = 50) when estimating the effect of a federal policy.
-Alternatively, we may assume an increasing number of clusters, where the specific clusters included can vary from sample to sample.
-In what follows, we discuss both cases. 
+Alternatively, we may assume an increasing number of clusters, where the specific clusters included can vary from sample to sample.  
+In both cases there is a two stage sampling scheme going on: in the first stage the clusters are sampled, in the second one the individuals inside the sampled clusters are drawn.  
 
-**Fixed amount of clusters**  
-We can think of the data generating process (DGP) as having 2 stages:  
-- in the first stage all the population parameters are drawn. This include the vector of length $G$ with all the $\beta_{g}$, and the cluster specific distributions for $X_{g}$ and $u_{g}$.  This stage only happens one, all the parameters from this stage are fixed.   
-- The second stage is a draw from the cluster distributions of ($X,\beta, u$) of the individual observations that will make our sample. This stage re-happens every time we take a sample from the population, this is the source of randomness.  
+#### Fixed amount of clusters
+- in the first stage all the population parameters are drawn. This include $\gamma$ the vector of length $G$ with all the $\beta_{g}$, and the cluster specific distributions for $X_{g}$ and $u_{g}$.  This stage only happens one, all the parameters from this stage are fixed.   
+- The second stage is a draw from the cluster distributions of ($X, u$) of the individual observations that will make our sample. This stage re-happens every time we take a sample from the population, this is the (only) source of randomness that there is in this setup.  
 
-**Infinite amount of clusters**  
+#### Infinite amount of clusters 
 If the amount of clusters that we possibly have is not finite the first sampling stage reoccurs every time we sample. So there are two sources of randomness:  
 1. which clusters we draw from the possibly infinite population of clusters and,  
-2. which individuals we draw from those clusters.  
+2. which individuals we draw from those clusters. 
 
 ### Endogeneity  
 Then we must decide wether the sample we are working with presents cluster-level endogenity, i.e. if $\mathbb{E}[X_{i}u_{i}|i \in g] \ne 0$. 
