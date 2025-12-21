@@ -56,95 +56,17 @@ end
     @test isa(crve,Matrix)
 end
 
-
-
-getallX(hes)
-
-ccc = hes.allclusters[1]
-computeResidual(ccc)
-WhiteAvar(ccc)
-computeExpectedSig.(hes.allclusters)
-mean(WhiteAvar.(hes.allclusters))
-innerBCrve(ccc)
-
-(montecarlo(hep,1000,100))
-
-histogram(permutedims(stack(bols.(hes.allclusters)))[:,2] - beta1)
-
-df = consistencyNg(hep)
-
-
-using Plots
-
-plot(
-    df.Ng,
-    df.Mean,
-    ribbon = df.SD,
-    xlabel = "Ng",
-    ylabel = "BetaHat",
-    legend = false,
-    lw = 2,
-    fillalpha = 0.3,
-)
- ## Test that the score is 0 in every cluster
-
-x = ccc.X[:,2]
-u = ccc.u 
-
-print( ccc.df )
-
-mean(x)
-std(x)
-
-histogram(
-    x,
-    bins = 5000
-)
-
-histogram2d(x, u,
-    nbins=50,
-    xlabel="X",
-    ylabel="u",
-    title="2D Histogram")
-
-mean( x .* u )
-
-reduce(vcat, getRegressorNoIntercept.( hes.allclusters ) )
-
-
-
-X = getRegressorNoIntercept.(hes.allclusters)
-U =  getU.(hes.allclusters)
-
-histogram(
-    mean.(broadcast((x,u) -> x .* u, X,U)),
-    bins=50
-    )
-
-
-#  MONTECARLO DEI BETAG
-betahatClusterWise = montecarloClusterWise(hep,1000,1000)
-
-
-@time montecarloClusterWise(hep, 100, 500)
-
-histogram(mean(betahatClusterWise, dims=2))
-std(betahatClusterWise, dims=2)
-
-diffbeta = betahatClusterWise .- beta1
-histogram(mean(diffbeta,dims=2))
-beta1
-
-montecarlo(clp,100,100) 
-montecarlo(hep,100,100)
-
-G = 50
-beta2 = 2
-μg = rand(Normal(0,4),G)
-endoPop = clPopulation(G, μg, beta2)
-endoSam = sample(endoPop,1000)
-S = checkScore(endoSam)
-
-bendo = bols(endoSam)
-CRVE(endoSam) .- whiteAvar(endoSam)
-
+Ng = 100
+d = Dict()
+for G in [10,50, 100, 500, 1000, 5000]
+    beta = rand(Normal(2, 4), G)
+    pop = hePopulation(G,beta,randn(G))
+    sam = sample(pop,Ng)
+        white = sqrt(whiteAvar(sam)[2,2])
+        crve = sqrt(CRVE(sam)[2,2])
+        stdev = montecarlo(pop,400,Ng,false,true)[2]
+        dwhite = white - stdev
+        dcrve = crve - stdev
+        d[G] = (dwhite,dcrve)
+end
+d

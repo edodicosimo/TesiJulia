@@ -120,7 +120,7 @@ We will simulate data in two ways, in the first one we will make so that the exp
 First we draw a random vector $\boldsymbol{\beta_{g}}$ from a normal distribution with mean $\beta _{APE}$ and variance $\sigma^{2}_{\beta}$.
 ```{julia}
 include("../src/ClusterSimulation.jl")
-G = 50 #Number of clusters 
+G = 100 #Number of clusters 
 Ng = 500 # Number of individuals per cluster
  
 β = rand(Normal(2,4),G)
@@ -362,10 +362,24 @@ plot!(x, y, linewidth= 2, label = "White")
 betahat = bols(endoSam)[2]
 white = sqrt(whiteAvar(endoSam)[2,2])
 crve = sqrt(CRVE(endoSam)[2,2])
-histogram(montecarlo(endoPop,400,Ng,true,true), bins=50, label="Montecarlo")
+histogram(montecarlo(endoPop,400,Ng,true,true), bins=50,normalize=:pdf, label="Montecarlo")
 d = Normal(betahat, white)
 D = Normal(betahat, crve)
 
+x = range(betahat - 4 * crve, betahat + 4 * crve; length = 1000)
+y = pdf.(d,x)
+Y = pdf.(D,x)
+plot!(x,y, linewidth =2, label = "White")
+plot!(x,Y, linewidth =2, label = "CRVE")
+```
+
+```{julia}
+betahat = bols(sam)[2]
+white = sqrt(whiteAvar(sam)[2,2])
+crve = sqrt(CRVE(sam)[2,2])
+histogram(montecarlo(pop,400,Ng,true,true),bins=50,normalize=:pdf, label="Montecarlo")
+d = Normal(betahat, white)
+D = Normal(betahat, crve)
 x = range(betahat - 4 * crve, betahat + 4 * crve; length = 1000)
 y = pdf.(d,x)
 Y = pdf.(D,x)

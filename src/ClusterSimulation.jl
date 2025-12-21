@@ -79,7 +79,9 @@ function simulateclCluster(mu_g::Float64, Ng::Int64, β::Float64)
     c = clCluster(Ng, df, Xig, y_ig, uig)
 end
 
-
+"""
+Simulate a cluster given a scalar beta and cg.
+"""
 function simulateHeCluster(beta::Float64, cg::Float64, Ng::Int64)
     Xig = [ones(Ng) randn(Ng)]
     betag = [1, beta]
@@ -93,6 +95,7 @@ function simulateHeCluster(beta::Float64, cg::Float64, Ng::Int64)
     )
     c = clCluster(Ng, df, Xig, y_ig, uig)
 end
+
 
 
 function bols(c::clCluster)
@@ -141,11 +144,19 @@ end
 
 
 ### SI POTREBBE FARE UN STRUCT MONTECARLO, MA PER ORA è IMPLEMENTATO COME UN SEMPLICE VETTORE QUINDI CI STA
-
+"""
+Run a montecarlo simulation given a population  
+ARGUMENTS:  
+    p : Population  
+    iterations  
+    Ng : The number of indiviuals to sample in each cluster  
+    allbeta : boolean, if false it returns only the mean and stdev of the montecarlo, if true returns all estimated betas  
+    two_stage_sampling : bool  
+"""
 function montecarlo(p::Population, iterations::Int64, Ng::Int64, allbeta::Bool=false, two_stage_sampling::Bool= false)
-    v = Population[]
+    v = clSample[]
     if two_stage_sampling
-        v = populationSimulationForMontecarlo(4.0,iterations,p.G,Ng,2.0)
+        v = populationSimulationForMontecarlo(4.0,iterations,p,Ng,2.0)
     else
         v = sample.(fill(p,iterations),Ng)
     end
@@ -157,9 +168,25 @@ function montecarlo(p::Population, iterations::Int64, Ng::Int64, allbeta::Bool=f
     end
 end
 
-function populationSimulationForMontecarlo(sigma_mu::Float64, iterations::Int64, G::Int64,Ng::Int64, beta::Float64)
+function populationSimulationForMontecarlo(sigma_mu::Float64, iterations::Int64, p::clPopulation,Ng::Int64, beta::Float64)
+    G = p.G
     v = rand.(fill((Normal(0,sigma_mu)),iterations),G)
     sample.(clPopulation.(G,v,beta),Ng)
+end
+
+function populationSimulationForMontecarlo(sigma_mu::Float64, iterations::Int64, p::hePopulation,Ng::Int64, beta::Float64)
+    # HePopulation tiene un vettore di beta come campo
+    # devo creare un vettore di popolazioni ognuna con un diverso betaG, da lì samplo, quindi non può prendere la popolazione come argomento
+    # step1 creo un vettore di vettori (i betag)
+    # step 2 creo una popolazione con ognugno di questi vettori
+    #samplo
+    β, sigma2 = mean(p.βg), std(p.βg)
+    G = p.G
+    cg = [randn(G) for _ in 1: iterations]
+    betaDistribution = Normal(2, sigma2)
+    betaVectors = [rand(betaDistribution, G) for _ in 1:iterations]
+    populations = hePopulation.(G,betaVectors,cg)
+    sample.(populations,Ng)
 end
 
 
@@ -224,7 +251,7 @@ end
 
 function CRVE(s::clSample)
     betahat = bols(s)
-    B = sum(broadcast((c) -> innerBCrve(c,betahat), endoSam.allclusters))
+    B = sum(broadcast((c) -> innerBCrve(c,betahat), s.allclusters))
     X = getallX(s)
     inv(X'*X) * B * inv(X'*X)
 end
