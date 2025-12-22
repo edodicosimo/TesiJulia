@@ -189,16 +189,27 @@ function populationSimulationForMontecarlo(sigma_mu::Float64, iterations::Int64,
     sample.(populations,Ng)
 end
 
-
+"""
+Run a montecarlo simulation computing beta_hat in each cluster  
+## Parameters:   
+- p : Population  
+- iterations : Int  
+- Ng : Int  
+## Returns:
+A matrix of {iterations} rows and G columns, each one is the estimated  
+parameters in cluster g
+"""
 function montecarloClusterWise(p::Population, iterations::Int64, Ng::Int64)
     v = fill(p,iterations)
     s = getAllClusters.(sample.(v,Ng))
     b = broadcast((a)->bols.(a),s)
     stack(getBeta.(b))
 end
+
 function getAllClusters(s::clSample)
     s.allclusters
 end
+
 function consistencyNg(p::hePopulation)
     v = vcat(collect(1:5:50), collect(50:10:250),collect(250:100:1000))
     l = length(v)
@@ -212,6 +223,8 @@ function consistencyNg(p::hePopulation)
     df.SD   = last.(df.BetaHat)
     return df
 end
+
+# Per fare la consistenza in G dobbiamo
 
 #TODO TESTARE LA CONSISTENZA (IN G VS IN NG) 
 #TODO TESTARE SE IL MIO MODO DI FARE LA MONTECARLO E PIU VELOCE CHE FARLO CON UN CICLO FOR

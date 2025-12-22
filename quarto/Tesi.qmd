@@ -253,6 +253,8 @@ betahatDiff = montecarloClusterWise(pop,100,100) .- β
 histogram(mean(betahatDiff, dims = 2), bins =15)
 ```
 As can be clearly seen from @fig-clusterwisemontecarlo there is consistency across all clusters.
+This holds true even if each time we resample the clusters (i.e. the number of clusters in our population is possibly infinite).
+
 
 ### APE
 Since $\beta_{\text{APE}}$ is simply the average of all the $\beta_g$, if each $\beta_g$ can be consistently estimated, then $\beta_{\text{APE}}$ can also be consistently estimated. 
@@ -266,7 +268,8 @@ where $S_i = X_i u_i$ is the score. Averaging this over all $G$ clusters gives:
 $$
 \hat{\beta}_\text{pols}=\frac{1}{G}\sum _{g}\hat{\beta_{g}}\xrightarrow{p}\beta _{\text{APE}}+ \frac{\sum _{g}\sum _{i \in g}S_{i}}{\sum _{g}\sum _{i \in g}\mathbf{x_{i}'x_{i}}}
 $$
-As long as we observe all clusters, the numerator of the second term is equal to $0$, and the estimator is therefore consistent.
+As long as we observe all clusters, the numerator of the second term is equal to $0$, and the estimator is therefore consistent.  
+But if we don't observe all G clusters than we cannot get a consisten estimation of $\hat{beta}_{\text{pols}}$.  
 
 
 ### Consistency as $N_{g} \xrightarrow{p} \infty$
