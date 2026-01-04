@@ -440,16 +440,21 @@ plots = [
 plot(plots..., layout = (10, 5), size = (1600, 1600))
 ```
 And each $\beta_{g}$ can be thought of as $\beta _{\text{APE}}$ plus an i.i.d. cluster specific deviation $d _{g} \sim \mathcal{N}(0, \sigma^{2}_{\beta})$, so that:
-And each $\beta_{g}$ can be thought of as $\beta _{\text{APE}}$ plus an i.i.d. cluster specific deviation $d _{g} \sim \mathcal{N}(0, \sigma^{2}_{\beta})$.
 $$
 \hat{\beta_{g}} = \beta_{\text{APE}}+ d_{g} + e_{g}
 $$
-The mean across clusters of these estimated parameters is the usual pooled OLS estimator, and it would converge to the average partial effect.
+The mean across clusters of these estimated parameters is the usual pooled OLS estimator, and it would converge to the average partial effect as $G \to \infty$.
 $$
 \hat{\beta}_\text{pols} = \beta _{\text{APE}}+\frac{1}{G}\sum _{g}d_{g}+ \frac{1}{G}\sum _{g=1}^{G}  e_{g}
 $$
 $\frac{1}{G}\sum _{g=1}^{G}d_{g}\xrightarrow{p}0, \frac{1}{G}\sum _{g=1}^{G}e_{g}\xrightarrow{p}0$.
-We demonstrate, by means of Monte Carlo simulations, that the asymptotic variance of each $\hat{\beta_{g}}$​ ($V_{g}$) can be consistently estimated using the White heteroskedasticity-robust variance estimator.
+We now demonstrate, by means of Monte Carlo simulations, that the asymptotic variance of each $\hat{\beta_{g}}$​ ($V_{g}$) can be consistently estimated using the White heteroskedasticity-robust variance estimator.  
+For each cluster, we compute the White heteroskedasticity-robust variance estimate of $\hat{\beta}_g$. We then compare this quantity to the Monte Carlo variance of $\hat{\beta}_g$, obtained from repeated resampling. The histogram plots the difference between the White-based variance estimate and the Monte Carlo variance across clusters, while the printed average summarizes the mean discrepancy, providing evidence on the consistency of the White estimator for $V_g$.
+```{julia}
+white = getindex.(WhiteAvar.(sam.allclusters),2,2)
+print("The average across clusters difference between the estimated variance using white and the Montecarlo variance is: ", mean(white - var(M,dims = 2)))
+histogram(white .- var(M, dims = 2), label = "difference between estimated variance and montecarlo one")
+```
 $$
 \frac{1}{\sqrt{ G }}\sum _{g}d_{g}\xrightarrow{d}\mathcal{N}(0,\sigma^{2}_{\beta})
 $$

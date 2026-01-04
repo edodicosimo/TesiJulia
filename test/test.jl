@@ -102,13 +102,14 @@ plots = [
 
 plot(plots..., layout = (10, 5), size = (1600, 1600))
 
-var(M, dims=2)
 
 white = getindex.(WhiteAvar.(sam.allclusters),2,2)
-mean(white - var(M,dims = 2))
-mean(white)
-whiteAvar(sam)[2,2]
+histogram(white .- var(M, dims = 2))
+print("The average across clusters difference between the estimated variance using white and the Montecarlo variance is: ", mean(white - var(M,dims = 2)))
 
+
+whiteAvar(sam)[2,2]
+ 
 # FACCIAMO IL PLOT DE VARI BETA_APE SE C'è RESAMPLE
 beta_APE = [mean(rand(β,G)) for _ in 1:1000]
 histogram(
