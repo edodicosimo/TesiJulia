@@ -379,10 +379,20 @@ If we could observe all the various $\beta_{g}$ we could get an estimate of $\si
 $$
 \frac{G}{G-1}\sum _{g=1}^{G} \left( \beta_{g} -\bar{\beta_{g}} \right)^{2} 
 $$
->[!note]
->The one above would be the variance of $\hat{\beta}_\text{pols}$ if I could observe all $\beta_{g}$ exactly, i.e. if the variance of all $\hat{\beta_{g}}$ would be 0
+We will now show these things using a Montecarlo method:
+```{julia}
+varianceOfBeta = []
+for _ in 1:1000
+    beta = rand(β,G)
+    barBeta = mean(beta)
+    push!(varianceOfBeta,barBeta)
+end
 
-Of course we do not observe all the $\beta_{g}$ we need to estimate them.  
+estimatedVar = (1 / (G - 1)) * sum((beta1 .- mean(beta1)).^2)/G
+estimatedStDev = sqrt(estimatedVar)
+print("The estimated standard deviation is: " , std(varianceOfBeta), "\nThe montecarlo standard deviation is: ", estimatedStDev)
+```
+Of course we do not observe all the $\beta_{g}$ but we need to estimate them.  
 Assuming that we can consistently estimate all of the various $\beta_{g}$ that we sampled, i.e. that there is no cluster level endogeneity we would obtain an estimated vector $\boldsymbol{\hat{\beta_{g}}}$.
 Each of the element of this vector will be distributed, where here the distribution is considering resampling of individuals, as:
 $$
@@ -393,12 +403,43 @@ $$
 \sqrt{ N_{G} }\left(\hat{\beta _{G}} - \beta _{g}\right) \xrightarrow{d} \mathcal{N}\left( 0, (X_{G}'X_{G})^{-1}E_{G}[X_{G}'u_{G}u_{G}'X_{G}] (X_{G}'X_{G})^{-1}\right) 
 \end{bmatrix}
 $$
-Where the subscripts index the cluster.
-So what we get are $G$ normally distributed estimates of the various $\beta_{g}$.
-So what we observe (estimate) is a vector of $\hat{\beta_{g}}$, each of them we can think of as the true parameter $\beta _{g}$ plus a mean-zero estimation error $e_{g}$.
+Where the subscripts index the cluster.  
+Thus, across clusters, we obtain $G$ asymptotically normal estimators, each centered at its own true parameter $\beta_g$, with cluster-specific asymptotic variances.
+Each estimated coefficient can be written as
 $$
-\hat{\beta_{g}}= \beta_{g} + e_{g}, \quad e_{g} \xrightarrow{d}\mathcal{N}\left( 0, \frac{V_{g}}{N_{g}} \right) 
+\hat{\beta}_g = \beta_g + e_g,
 $$
+where $e_g$ is a mean-zero estimation error satisfying
+$$
+\sqrt{N_g}\, e_g \;\xrightarrow{d}\; \mathcal{N}(0, V_g)
+$$
+Hence, the observed object is the vector $\hat{\boldsymbol{\beta}}$, which can be interpreted as noisy realizations of the underlying cluster-level parameters with noise arising from within-cluster sampling variation.
+Now we show this mechanism with a cluster-wise Monte Carlo experiment.  
+Using the vector of true parameters that we have previously simulated we construct a population with $G$ clusters. For each cluster, we repeatedly resample individuals and re-estimate the corresponding coefficient $\hat{\beta}_g$. This produces, for every cluster $g$, a Monte Carlo distribution of $\hat{\beta}_g$ that reflects only within-cluster sampling variation.  
+The resulting histograms display these empirical distributions, while the vertical line marks the true parameter $\beta_g$. This visualization makes explicit that each $\hat{\beta}_g$ can be interpreted as the true $\beta_g$ plus a mean-zero estimation error, and that the dispersion of the estimator differs across clusters according to their sampling variability.  
+```{julia}
+iter = 500
+Ng = 100
+pop = hePopulation(G,beta1,randn(G))
+sam = sample(pop,Ng)
+M = montecarloClusterWise(pop,iter,Ng) #G rows, iter columns
+
+plots = [
+    begin
+        p = histogram(
+            M[i, :],
+            title = "Cluster $i",
+            legend = false
+        )
+        vline!(p, [beta1[i]], color = :red, linewidth = 2)
+        p
+    end
+    for i in 1:size(M, 1)
+]
+
+plot(plots..., layout = (10, 5), size = (1600, 1600))
+```
+And each $\beta_{g}$ can be thought of as $\beta _{\text{APE}}$ plus an i.i.d. cluster specific deviation $d _{g} \sim \mathcal{N}(0, \sigma^{2}_{\beta})$, so that:
 And each $\beta_{g}$ can be thought of as $\beta _{\text{APE}}$ plus an i.i.d. cluster specific deviation $d _{g} \sim \mathcal{N}(0, \sigma^{2}_{\beta})$.
 $$
 \hat{\beta_{g}} = \beta_{\text{APE}}+ d_{g} + e_{g}
