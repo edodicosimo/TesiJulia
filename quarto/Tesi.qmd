@@ -318,7 +318,7 @@ $$
 $$
 Now if we want to estimate $\beta _{\text{APE}}$ we note that it is equal to the average across $G$ of the various $\beta_{g}$, and since the vaious $\hat{\beta_{g}}$ are independent, the variance of their mean will be the mean of their variances.
 $$
-\sum _{g} \left(\hat{\beta_{g}}-\beta_{g}\right) = \hat{\beta}_\text{pols} - \beta _{\text{APE}} \overset{a}{\sim} \mathcal{N} \left( 0, \frac{1}{G}\sum _{g}\operatorname{Var}\left( \hat{\beta_{g}} \right) \right)  
+\frac{1}{\sqrt{G}}\sum _{g} \left(\hat{\beta_{g}}-\beta_{g}\right) = \hat{\beta}_\text{pols} - \beta _{\text{APE}} \overset{a}{\sim} \mathcal{N} \left( 0, \frac{1}{G}\sum _{g}\operatorname{Var}\left( \hat{\beta_{g}} \right) \right)  
 $$
 As noted before if we have enough clusters:
 $$
@@ -334,6 +334,88 @@ This means that the asymptotic variance of $\hat{\beta}_{\text{pols}}$ will be d
 $$
 V_{\text{endo}} - V _{\text{exo}} = \frac{ \mathbb{E}_{g}(\mu _{g}^{2})}{{\sum _{i}\mathbf{x_{i}'x_{i}}}}
 $$
+
+## Montecarlo
+There is a distribution with mean $\beta _{\text{APE}}$ and variance $\sigma^{2}_{\beta}$ from which we sample $G$ $\beta_{g}$, obtaining a vector $\boldsymbol{\beta_{g}}$. 
+```{julia}
+G = 50
+β = Normal(2,4)
+beta1 = rand(β,G)
+```
+$$
+E[\boldsymbol{\beta_{g}}] = 
+\begin{bmatrix}
+E[\beta _{1}] \\
+E[\beta _{2}] \\ \\
+\dots \\
+E[\beta _{G}] \\
+\end{bmatrix}
+= 
+\begin{bmatrix}
+\beta _{\text{APE}}  \\
+\beta _{\text{APE}} \\
+\dots \\
+\beta _{\text{APE}}
+\end{bmatrix}
+$$
+Assuming that the various $\beta_{g}$ are independent we have that across repeated samples:
+$$
+\operatorname{Cov}\left( \boldsymbol{\beta_{g}} \right) = 
+\begin{bmatrix}
+\sigma^{2}_{\beta} & 0  & \dots  & 0 \\
+0 & \sigma^{2}_{\beta}  & \dots & 0 \\
+\dots  & \dots & \dots & \dots  \\
+0 & 0 & \dots  & \sigma^{2}_{\beta}
+\end{bmatrix}
+$$
+Taking the mean of the sampled $\beta_{g}$ we have that ss  $G \to \infty$:
+$$
+\bar{\beta_{g}}=\frac{1}{G}\sum _{g=1}^{G}\beta_{g} \xrightarrow{p} \beta _{\text{APE}}
+$$
+$$
+\frac{1}{\sqrt{ G }}\sum _{g=1}^{G}(\beta_{g} - \beta _{\text{APE}}) \xrightarrow{d} \mathcal{N}\left( 0, \sigma^{2}_{\beta}\right) 
+$$
+If we could observe all the various $\beta_{g}$ we could get an estimate of $\sigma^{2}_{\beta}$ by doing:
+$$
+\frac{G}{G-1}\sum _{g=1}^{G} \left( \beta_{g} -\bar{\beta_{g}} \right)^{2} 
+$$
+>[!note]
+>The one above would be the variance of $\hat{\beta}_\text{pols}$ if I could observe all $\beta_{g}$ exactly, i.e. if the variance of all $\hat{\beta_{g}}$ would be 0
+
+Of course we do not observe all the $\beta_{g}$ we need to estimate them.  
+Assuming that we can consistently estimate all of the various $\beta_{g}$ that we sampled, i.e. that there is no cluster level endogeneity we would obtain an estimated vector $\boldsymbol{\hat{\beta_{g}}}$.
+Each of the element of this vector will be distributed, where here the distribution is considering resampling of individuals, as:
+$$
+\begin{bmatrix}
+\sqrt{ N_{1} }\left(\hat{\beta _{1}} - \beta _{1}\right) \xrightarrow{d} \mathcal{N}\left( 0, (X_{1}'X_{1})^{-1}E_{1}[X_{1}'u_{1}u_{1}'X_{1}] (X_{1}'X_{1})^{-1}\right) \\
+\sqrt{ N_{2} }\left(\hat{\beta _{2}} - \beta _{2}\right) \xrightarrow{d} \mathcal{N}\left( 0, (X_{2}'X_{2})^{-1}E_{2}[X_{2}'u_{2}u_{2}'X_{2}] (X_{2}'X_{2})^{-1}\right)  \\
+\dots \\
+\sqrt{ N_{G} }\left(\hat{\beta _{G}} - \beta _{g}\right) \xrightarrow{d} \mathcal{N}\left( 0, (X_{G}'X_{G})^{-1}E_{G}[X_{G}'u_{G}u_{G}'X_{G}] (X_{G}'X_{G})^{-1}\right) 
+\end{bmatrix}
+$$
+Where the subscripts index the cluster.
+So what we get are $G$ normally distributed estimates of the various $\beta_{g}$.
+So what we observe (estimate) is a vector of $\hat{\beta_{g}}$, each of them we can think of as the true parameter $\beta _{g}$ plus a mean-zero estimation error $e_{g}$.
+$$
+\hat{\beta_{g}}= \beta_{g} + e_{g}, \quad e_{g} \xrightarrow{d}\mathcal{N}\left( 0, \frac{V_{g}}{N_{g}} \right) 
+$$
+And each $\beta_{g}$ can be thought of as $\beta _{\text{APE}}$ plus an i.i.d. cluster specific deviation $d _{g} \sim \mathcal{N}(0, \sigma^{2}_{\beta})$.
+$$
+\hat{\beta_{g}} = \beta_{\text{APE}}+ d_{g} + e_{g}
+$$
+The mean across clusters of these estimated parameters is the usual pooled OLS estimator, and it would converge to the average partial effect.
+$$
+\hat{\beta}_\text{pols} = \beta _{\text{APE}}+\frac{1}{G}\sum _{g}d_{g}+ \frac{1}{G}\sum _{g=1}^{G}  e_{g}
+$$
+$\frac{1}{G}\sum _{g=1}^{G}d_{g}\xrightarrow{p}0, \frac{1}{G}\sum _{g=1}^{G}e_{g}\xrightarrow{p}0$.
+We demonstrate, by means of Monte Carlo simulations, that the asymptotic variance of each $\hat{\beta_{g}}$​ ($V_{g}$) can be consistently estimated using the White heteroskedasticity-robust variance estimator.
+$$
+\frac{1}{\sqrt{ G }}\sum _{g}d_{g}\xrightarrow{d}\mathcal{N}(0,\sigma^{2}_{\beta})
+$$
+$$
+\sqrt{ G }\left( \hat{\beta}_\text{pols}-\beta _{\text{APE}} \right) \xrightarrow{d}\mathcal{N}(0,)
+$$
+
 
 ### All cluster observed and no endogeneity
 So if there is no endogeneity i can consistently estimate the AVar of each $\hat{\beta_{g}}$ using White variance estimator, let's test this using the montecarlo method.

@@ -4,7 +4,7 @@ using Statistics
 using Distributions
 using DataFrames
 using Plots
-
+using LaTeXStrings
 
 abstract type Population end
 

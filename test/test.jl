@@ -69,4 +69,74 @@ for G in [10,50, 100, 500, 1000, 5000]
         dcrve = crve - stdev
         d[G] = (dwhite,dcrve)
 end
-d
+
+iter = 500
+G = 50 #
+Ng = 100
+β = Normal(2,4)
+betaG = permutedims(reduce(hcat,[rand(β,G) for _ in 1:iter]))
+μ = mean(betaG, dims=1)
+Xc = betaG .- μ
+
+Eps = (Xc' * Xc) / (iter - 1)
+mean(diag(Eps)) # deve esssere uguale alla varianza di beta 
+
+# Prendiamo un sample di beta e ci costruiamo una popolazione
+beta1 = rand(β, G)
+pop = hePopulation(G,beta1,randn(G))
+sam = sample(pop,Ng)
+M = montecarloClusterWise(pop,iter,Ng) #G rows, iter columns
+
+plots = [
+    begin
+        p = histogram(
+            M[i, :],
+            title = "Cluster $i",
+            legend = false
+        )
+        vline!(p, [beta1[i]], color = :red, linewidth = 2)
+        p
+    end
+    for i in 1:size(M, 1)
+]
+
+plot(plots..., layout = (10, 5), size = (1600, 1600))
+
+var(M, dims=2)
+
+white = getindex.(WhiteAvar.(sam.allclusters),2,2)
+mean(white - var(M,dims = 2))
+mean(white)
+whiteAvar(sam)[2,2]
+
+# FACCIAMO IL PLOT DE VARI BETA_APE SE C'è RESAMPLE
+beta_APE = [mean(rand(β,G)) for _ in 1:1000]
+histogram(
+    beta_APE,
+    bins = 20,
+    normalife = :pdf,
+    title = L"$\beta_{\text{APE}}$ across repeated samples"
+    )
+
+
+varianceOfBeta = []
+for _ in 1:1000
+    beta = rand(β,G)
+    pops = hePopulation(G,beta,randn(G))
+    barBeta = mean(pops.βg)
+    push!(varianceOfBeta,barBeta)
+end
+
+estimatedVar = (1 / (G - 1)) * sum((pop.βg .- mean(pop.βg)).^2)/G
+estimatedStDev = sqrt(estimatedVar)
+std(varianceOfBeta)
+
+histogram(
+    estimatedvariances,
+    bins = 100
+)
+
+
+hatBetaG = getBeta(bols.(sam.allclusters))
+sqrt(G) * mean(hatBetaG .- 2)
+
