@@ -67,8 +67,12 @@ So what does?
 What the the authors claim is that cluster adjustment matters not because errors or regressors are correlated within clusters, but because of how the data are generated. 
 What drives the need for clustering adjustment is the design: either the sampling scheme, i.e. the probability of including an individual depends on the cluster she belongs to. Or the experimental design, i.e. treatment assignment itself depends on cluster membership, as in the case of region-specific policies.  
 In this sense, correlations of residuals or regressors inside clusters are neither necessary nor sufficient to justify cluster-robust adjustments.  
-They conclude that the choice between CRVE and White must depends on the estimand, not on the observed correlation. If the clusters in the sample are only a small subset of many clusters in the population, then CRVE is appropriate. If instead all clusters are observed and both treatment and sampling are i.i.d., White is correct.  
-CRVE tends to be conservative, except in special cases: when treatment effects are homogeneous, when the sample includes only a few clusters drawn from a much larger population, or when only a negligible fraction of units per cluster is sampled.  
+They conclude that the choice between correcting for clustering and not must not depende on the observed correlation, but rather on the assumptions we are making about the data generating process.  
+If neither of the sampling scheme or the assignment mechanism are clustered, then you shall not cluster.  
+Moreover they claim that cluster robust variace estimator (CRVE from now on) is too conservative unless:  
+- There are homogeneous effect (i.e. the effect of the treatment is equal for all people in a cluster)
+- You only observe a small fraction of clusters
+- You only sample at most one individual per cluster (in this case the computed S.E. wuold be equals to the one obtained using White's heteroskedasticity robust variance estimator)
  
 ## General setup
 In this section, we lay out the general setup that will guide the rest of the thesis.
