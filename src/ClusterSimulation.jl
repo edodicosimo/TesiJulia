@@ -224,6 +224,28 @@ function consistencyNg(p::hePopulation)
     return df
 end
 
+"""
+FIXME end this
+Arguments:
+- a vector with the various sample size
+- a vector with the element to which apply the function
+- A function to be broadcasted
+"""
+function consistencyDf(objectiveVector :: Vector, f::Function)
+    v = vcat(collect(1:5:50), collect(50:10:250),collect(250:100:1000))
+    l = length(v)
+    pop = fill(p,l)
+    betahat = montecarlo.(pop,100,v)
+    df = DataFrame(
+        "Ng" => v,
+        "BetaHat" => betahat
+    )
+    df.Mean = first.(df.BetaHat)
+    df.SD   = last.(df.BetaHat)
+    return df
+end
+
+
 # Per fare la consistenza in G dobbiamo
 
 #TODO TESTARE LA CONSISTENZA (IN G VS IN NG) 

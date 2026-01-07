@@ -1,6 +1,6 @@
 ## Abstract
 This thesis studies inference in linear regression models with clustered data, with a particular focus on the consistency and interpretation of cluster-robust variance estimators (CRVE). The motivation stems from the widespread use of clustering adjustments in applied work and from recent contributions questioning their robustness when clustering is not required by the data-generating process.
-The first part of the thesis introduces the problem of variance estimation for the OLS estimator and clarifies why clustering matters for asymptotic inference. After defining what clustered data are, the literature review discusses the framework proposed by Abadie, Athey, Imbens, and Wooldridge, which reframes clustering as a feature of sampling and assignment design rather than residual correlation, and highlights the conditions under which CRVE or White’s heteroskedasticity-robust estimator is appropriate.
+The first part of the thesis introduces the problem of variance estimation for the OLS estimator and clarifies why clustering matters for asymptotic inference. After defining what clustered data are, the literature review discusses the framework proposed by @imbens, which reframes clustering as a feature of sampling and assignment design rather than residual correlation, and highlights the conditions under which CRVE or White’s heteroskedasticity-robust estimator is appropriate.
 The core of the thesis develops a general setup with heterogeneous treatment effects across clusters and decomposed error terms. Different assumptions on the number of clusters are considered, together with the role of cluster-level endogeneity. A simulation framework is then introduced to generate both exogenous and endogenous clustered data, allowing population-level exogeneity to hold while within-cluster endogeneity is present.
 Using Monte Carlo experiments, the thesis studies the consistency of cluster-specific estimators and of the pooled OLS estimator for the average partial effect. The results show that consistency of the average effect can be achieved even in the presence of cluster-level endogeneity, provided that population-level exogeneity holds and all clusters are observed.
 The final part of the thesis focuses on variance estimation. It analyzes how cluster-level endogeneity affects the asymptotic variance of the pooled estimator and shows why this effect does not average out across clusters. The CRVE matrix is derived formally, its convergence properties are discussed, and its difference from White’s variance estimator is made explicit. Monte Carlo evidence illustrates the conditions under which each variance estimator is consistent and clarifies why CRVE should not be used as a default robustness check.
@@ -25,7 +25,7 @@ $$
 \frac{1}{\sqrt{ N }}(Z_{N})\sim \left( 0, \frac{1}{N}\sum_{i=1}^N \text{Var}(X_{i}) \right) 
 $$
 So the variance of $Z_{N}$ scaled by $\frac{1}{\sqrt{ N }}$ is the average variance of all the $X_{i}$s. <br>
-But here comes the problem, if our data are clustered we do not have that all the observation are independent, but rather we have that the observation of all the individuals inside a cluster are correlated, so we would have that
+But here comes the problem, if our data are clustered we do not have that all the observations are independent, but rather we have that the observation of all the individuals inside a cluster are correlated, so we would have that
 $$
 \frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0, \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i}) + \frac{2}{N}\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i}u_{i},X_{j}u_{j})\right)
 $$
@@ -38,7 +38,8 @@ Yes. The distribution we refer to is the distribution of $\hat{\beta}_\text{ols}
 Since $\hat{\beta}_\text{ols}$ is a function of random variables ($X_i$ and $u_i$), if we knew their full population distributions, we would know the exact value of $\beta$. But because we only observe a sample, our estimate varies from sample to sample. In this sense, $\hat{\beta}_\text{ols}$ *is* a random variable and therefore has a distribution.
 
 ### What are clustered data?
-Let's take a step back and ask ourselves what does it mean that our data are clustered? The defining feature of a cluster is that individuals within it exhibit some form of **unobserved** correlation.  
+Let's take a step back and ask ourselves what does it mean that our data are clustered.  
+The defining feature of a cluster is that individuals within it exhibit some form of **unobserved** correlation.  
 Suppose our sample contains $N$ individuals, each with an observed trait $X$. We can represent these as  $X_{ig} = (X_{11}, \dots, X_{N_1 1},\; X_{12}, \dots, X_{N_2 2}, \dots,\; X_{N_G G})$, where $i$ indexes individuals within a cluster and $g$ indexes the cluster.
 
 We can think of all these $X_{ig}$ as being drawn from the same population distribution, so they are **identically distributed**. Let us assume this distribution has mean $0$.  
@@ -60,9 +61,9 @@ $$
 Each cluster is a subpopulation with its own distribution, and the overall population is the mixture of all $G$ cluster distributions.
 
 ## Literature Review  
-The starting point of this thesis is the framework proposed by Abadie, Athey, Imbens, and Wooldridge (@imbens), which reframes clustering adjustments as a problem of sampling and assignment design rather than residual correlation.
-The authors argue that the commonly used CRVE is not robust in the following sense: when clustering is not required, the CRVE does not consistently estimate the asymptotic variance of $\hat{\beta}_{\text{OLS}}$, so that using it as a precautionary default is incorrect. Moreover, they emphasize that a discrepancy between the variance estimated using White’s heteroskedasticity-robust estimator and that obtained using the CRVE does not, by itself, imply that the CRVE is the correct estimator.
-So what does?
+The starting point of this thesis is the framework proposed by @imbens, which reframes clustering adjustments as a problem of sampling and assignment design rather than residual correlation.  
+The authors argue that the commonly used CRVE is not robust in the following sense: when clustering is not required, the CRVE does not consistently estimate the asymptotic variance of $\hat{\beta}_{\text{OLS}}$, so that using it as a precautionary default is incorrect. Moreover, they emphasize that a discrepancy between the variance estimated using White’s heteroskedasticity-robust estimator and that obtained using the CRVE does not, by itself, imply that the CRVE is the correct estimator.  
+So what does?  
 What the the authors claim is that cluster adjustment matters not because errors or regressors are correlated within clusters, but because of how the data are generated. 
 What drives the need for clustering adjustment is the design: either the sampling scheme, i.e. the probability of including an individual depends on the cluster she belongs to. Or the experimental design, i.e. treatment assignment itself depends on cluster membership, as in the case of region-specific policies.  
 In this sense, correlations of residuals or regressors inside clusters are neither necessary nor sufficient to justify cluster-robust adjustments.  
@@ -115,7 +116,7 @@ In order for $\hat{\beta}_{\text{ols}}$ to be consistent we need exogeneity, mea
 
 
 ## Simulating a dataset
-We will simulate data in two ways, in the first one we will make so that the expected value of the score is $0$ in all clusters, in the second one the expected value of the score will be $0$ only at the population level.
+We will simulate data in two ways, in the first one we will construct them so that the expected value of the score is $0$ in all clusters, in the second one the expected value of the score will be $0$ only at the population level.
 
 First we draw a random vector $\boldsymbol{\beta_{g}}$ from a normal distribution with mean $\beta _{APE}$ and variance $\sigma^{2}_{\beta}$.
 ```{julia}
@@ -129,7 +130,7 @@ We then simulate our dataset in two steps, according to the following model:
 $$
 y_{ig} = \beta_{g} x_{ig} + (c_g + v_{ig})
 $$
-In the first step we simulate the population parameters, and in the second we draw from them.
+In the first step we simulate the population parameters, and in the second we draw observations from them.
 
 ### Description of the Two Steps
 ```{julia}
@@ -147,7 +148,6 @@ The line above generates a sample from the population.
 - **`Ng`** is the number of observations per cluster.    
 The function draws data for all `G` clusters, each containing `Ng` observations, and returns a sample struct built according to the population’s parameters.  
 I can then estimate $\hat{\beta}_\text{g}$ in each cluster and then broadcast it to all clusters in our sample, getting $G$ estimates.  
-Each of these 
 
 ### Endogenous clusters
 The second way in which we'll simulate our data is as follow.  
@@ -256,7 +256,7 @@ As can be clearly seen from @fig-clusterwisemontecarlo there is consistency acro
 This holds true even if each time we resample the clusters (i.e. the number of clusters in our population is possibly infinite).
 
 
-### APE
+### Average Partial Effect
 Since $\beta_{\text{APE}}$ is simply the average of all the $\beta_g$, if each $\beta_g$ can be consistently estimated, then $\beta_{\text{APE}}$ can also be consistently estimated. 
 But what happens if there is cluster-level endogeneity?  
 In that case, consistency is still achievable—as long as endogeneity does not arise at the population level.
@@ -391,6 +391,46 @@ end
 estimatedVar = (1 / (G - 1)) * sum((beta1 .- mean(beta1)).^2)/G
 estimatedStDev = sqrt(estimatedVar)
 print("The estimated standard deviation is: " , std(varianceOfBeta), "\nThe montecarlo standard deviation is: ", estimatedStDev)
+```
+
+```{julia}
+v = vcat(collect(1:5:50), collect(50:10:300))
+l = length(v)
+
+betaDict = Dict()
+for G in v
+    varianceBeta = []
+    for _ in 1:1000
+        beta = rand(β,G)
+        barbeta = mean(beta)
+        push!(varianceBeta, barbeta)
+    end
+    beta = rand(β,G)
+    estimatedVar = (1 / (G - 1)) * sum((beta .- mean(beta)).^2)/G 
+    var(varianceBeta)
+    betaDict[G] = estimatedVar - var(varianceBeta)
+end 
+
+
+Gs = sort(collect(keys(betaDict)))
+vals = [betaDict[G] for G in Gs]
+
+plot(
+    Gs,
+    vals,
+    seriestype = :line,
+    marker = :circle,
+    linewidth = 2,
+    markersize = 1,
+    alpha = 0.9,
+    xlabel = L"G",
+    ylabel = "Estimated variance - Montecarlo variance",
+    title = "Variance Estimation Error vs Number of Clusters",
+    legend = false,
+    grid = :on
+)
+
+hline!([0.0], linestyle = :dash, linewidth = 1.5) 
 ```
 Of course we do not observe all the $\beta_{g}$ but we need to estimate them.  
 Assuming that we can consistently estimate all of the various $\beta_{g}$ that we sampled, i.e. that there is no cluster level endogeneity we would obtain an estimated vector $\boldsymbol{\hat{\beta_{g}}}$.
@@ -563,9 +603,8 @@ $$
 \mathbf{X_{N_{G}G}}
 \end{bmatrix}
 $$
----
-
-The idea behind CRVE is that clusters are independent one from the other. Since inference requires independence across a big number of units, we base it on the number of clusters rather than the number of individuals. Assuming that $\mathbb{E}\left[ \mathbf{X'_{g}u_{g}} \right]=0$, $\hat{\beta}_\text{ols}$ will be a consistent estimator of the population parameter $\beta$ if $G \to \infty$ [@wooldridge2010econometric]. To understand this note that computing $\beta$:
+The key intuition underlying cluster-robust variance estimation (CRVE) is that dependence is allowed within clusters, while clusters themselves are assumed to be asymptotically independent. Consequently, asymptotic inference is driven by the number of clusters rather than by the total number of individual observations.   
+This reasoning is consistent with the general principle emphasized by @ibragimov2010t, namely that the consistency of robust variance estimators relies on averaging over an asymptotically large number of essentially uncorrelated units. In the case of clustered standard errors, consistency is achieved by aggregating information across an increasing number of independent clusters, in direct analogy with heteroskedasticity-robust estimators averaging over independent disturbances or long-run variance estimators averaging over weakly dependent frequency components. Assuming that $\mathbb{E}\left[ \mathbf{X'_{g}u_{g}} \right]=0$, $\hat{\beta}_\text{ols}$ will be a consistent estimator of the population parameter $\beta$ if $G \to \infty$ [@wooldridge2010econometric]. To understand this note that computing $\beta$:
 $$
 \left( X'X \right)^{-1}\left( X'y \right) 
 $$
@@ -649,22 +688,19 @@ $$
 \end{bmatrix}
 $$
 
-Then we sum this over all G clusters:
+Then we sum this over all G clusters:  
 $$
 \mathbf{\hat{B}}=
 \begin{bmatrix}
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{3 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \cdots &
-\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\[6pt]
-
+\displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{1 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{3 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \cdots &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{2 i g}\,X_{k j g}\,\hat u_{i g}\,\hat u_{j g} \\
-
-\vdots & \vdots & \ddots & \vdots \\[6pt]
-
+\vdots & \vdots & \ddots & \vdots \\
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{1 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \displaystyle \sum_{g=1}^{G}\sum_{i \in g}\sum_{j \in g} X_{k i g}\,X_{3 j g}\,\hat u_{i g}\,\hat u_{j g} &
 \cdots &
@@ -709,7 +745,7 @@ $$
 \frac{1}{G}\sum_{g}
 \mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g
 \;\overset{p}{\longrightarrow}\;
-\mathbb{E}\!\left[ \mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g \right]
+\mathbb{E}\left[ \mathbf{X}_g^{\prime}\mathbf{u}_g \mathbf{u}_g^{\prime}\mathbf{X}_g \right]
 $$
 
 

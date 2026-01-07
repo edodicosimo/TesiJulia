@@ -86,6 +86,7 @@ beta1 = rand(β, G)
 pop = hePopulation(G,beta1,randn(G))
 sam = sample(pop,Ng)
 M = montecarloClusterWise(pop,iter,Ng) #G rows, iter columns
+m = montecarlo(pop,1000,Ng,false,true) 
 
 plots = [
     begin
@@ -132,8 +133,46 @@ estimatedVar = (1 / (G - 1)) * sum((pop.βg .- mean(pop.βg)).^2)/G
 estimatedStDev = sqrt(estimatedVar)
 std(varianceOfBeta)
 
+v = vcat(collect(1:5:50), collect(50:10:250),collect(250:100:1000))
+l = length(v)
+
+betaDict = Dict()
+for G in v
+    varianceBeta = []
+    for _ in 1:1000
+        beta = rand(β,G)
+        barbeta = mean(beta)
+        push!(varianceBeta, barbeta)
+    end
+    beta = rand(β,G)
+    estimatedVar = (1 / (G - 1)) * sum((beta .- mean(beta)).^2)/G 
+    var(varianceBeta)
+    betaDict[G] = estimatedVar - var(varianceBeta)
+end 
+
+
+Gs = sort(collect(keys(betaDict)))
+vals = [betaDict[G] for G in Gs]
+
+plot(
+    Gs,
+    vals,
+    seriestype = :line,
+    marker = :circle,
+    linewidth = 2,
+    markersize = 1,
+    alpha = 0.9,
+    xlabel = L"G",
+    ylabel = L"\widehat{\mathrm{Var}}(\bar\beta) - \mathrm{Var}(\bar\beta)",
+    title = "Variance Estimation Error vs Number of Clusters",
+    legend = false,
+    grid = :on
+)
+
+hline!([0.0], linestyle = :dash, linewidth = 1.5) 
+
 histogram(
-    estimatedvariances,
+    varianceOfBeta,
     bins = 100
 )
 
@@ -141,3 +180,32 @@ histogram(
 hatBetaG = getBeta(bols.(sam.allclusters))
 sqrt(G) * mean(hatBetaG .- 2)
 
+
+
+dg = pop.βg .- 2
+Ngs = [10,100,200,300,1000]
+dNg = Dict()
+for Ng in Ngs
+    d = Dict(i => [] for i in 1:G)
+    for _ in 1:1000
+        sample1 = sample(pop,Ng)
+        eg = getBeta(bols.(sample1.allclusters)) .- beta1
+        for g in 1:G
+            push!(d[g],eg[g])
+        end
+    end
+    vareg = mean([var(e) for e in values(d)])
+    dNg[Ng] = vareg
+end
+
+mus = []
+for _ in 1:1000
+    beta = rand(β,G)
+    dg = beta .- 2
+    m = mean(dg)
+    push!(mus,m)
+end
+sqrt(var(mus) + 0.0103885)
+
+sqrt(whiteAvar(sam))
+sqrt(CRVE(sam))
