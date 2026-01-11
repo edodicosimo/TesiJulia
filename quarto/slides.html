@@ -28,7 +28,27 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-  </style>
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-00ac2f6af1389919a18f42df5b7c0002.css">
   <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -145,6 +165,44 @@ Edoardo Di Cosimo
 <li>Usual White Variance estimator is not consistent</li>
 </ul>
 </section>
+<section class="slide level2">
+
+</section>
+<section>
+<section id="literature-review" class="title-slide slide level1 center">
+<h1>Literature review</h1>
+
+</section>
+<section id="why-cluster" class="slide level2">
+<h2>Why Cluster?</h2>
+<ul>
+<li>Traditional view: adjust for <strong>within-cluster error correlation</strong>.<br>
+</li>
+<li>Bias in OLS S.E. grows with: strong error correlation, correlated regressors, large clusters.<br>
+</li>
+<li>CRVE relies on <strong>large G</strong> asymptotics.</li>
+</ul>
+</section>
+<section id="fixed-g" class="slide level2">
+<h2>Fixed G</h2>
+<ul>
+<li><span class="citation" data-cites="ibragimov2010t">Ibragimov and Müller (<a href="#/section" role="doc-biblioref" onclick="">2010</a>)</span>: inference can use <strong>cluster-level estimates</strong>.<br>
+</li>
+<li>If they are (approximately) independent &amp; Gaussian a <strong>t-test</strong> with <span class="math inline">\(t_{G−1}\)</span> is valid even with heterogeneous variances.</li>
+</ul>
+</section>
+<section id="the-design-based-argument" class="slide level2">
+<h2>The Design-Based Argument</h2>
+<ul>
+<li>Clustering matters because of <strong>sampling or assignment design</strong>, not residual correlation.<br>
+</li>
+<li>Residual correlation is <strong>neither necessary nor sufficient</strong>.<br>
+</li>
+<li>If neither sampling nor treatment assignment is clustered <strong>do not cluster</strong>.<br>
+</li>
+<li>CRVE is often conservative unless effects are homogeneous or clusters are rarely observed.</li>
+</ul>
+</section>
 <section id="heterogeneous-effect" class="slide level2">
 <h2>Heterogeneous effect</h2>
 <p><span class="math display">\[
@@ -152,8 +210,30 @@ y_{ig} = \boldsymbol{\beta}_{g}\mathbf{X}_{ig} + \boldsymbol{\gamma}\mathbf{Z}_{
 \]</span> <span class="math display">\[
 \boldsymbol{\beta_{g}} = \begin{bmatrix} \alpha _{g} \\ \beta _{g}\end{bmatrix}
 \]</span></p>
-
 </section>
+<section id="estimand" class="slide level2">
+<h2>Estimand</h2>
+<ul>
+<li>In which parameter are we interested?
+<ul>
+<li><h2 id="beta_textape"><span class="math inline">\(\beta_{\text{APE}}\)</span></h2></li>
+</ul></li>
+</ul>
+</section>
+<section id="average-partial-effect" class="slide level2">
+<h2>Average Partial Effect</h2>
+<p>$$</p>
+<p>$$</p>
+</section>
+<section id="section" class="slide level2 smaller scrollable">
+<h2></h2>
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-ibragimov2010t" class="csl-entry" role="listitem">
+Ibragimov, Rustam, and Ulrich K Müller. 2010. <span>“T-Statistic Based Correlation and Heterogeneity Robust Inference.”</span> <em>Journal of Business &amp; Economic Statistics</em> 28 (4): 453–68.
+</div>
+</div>
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">

@@ -11,7 +11,7 @@ In costructing the confidence intervals of the OLS estimator $\hat{\beta}_{\text
 $$
 \frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i}
 $$
-that determines the estimator's asymptotic distribution. Assuming that $E[X_{i}u_{i}] = 0$, the Lindernberg-Levy CLT apply:
+that determines the estimator's asymptotic distribution. Assuming that $E[X_{i}u_{i}] = 0$, the Lindernberg-Levy CLT[@wooldridge2010econometric] apply:
 $$
 \frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0,  \frac{1}{N} \sum_{i}\operatorname{Var}(X_{i}u_{i}) \right)
 $$

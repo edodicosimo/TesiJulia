@@ -1,8 +1,26 @@
 ---
 title: "Cluster Robust Variance Estimation"
 author: "Edoardo Di Cosimo"
-format: revealjs
+format: beamer
 ---
+
+## Introduction
+
+- The variance of the sum of 2 random variables $X_{1}$ and $X_{2}$ is:
+$$
+\text{Var}(X_{1})+\text{Var}(X_{2})+
+2\cdot
+\underbrace{\text{cov}(X_{1},X_{2})}_{=0\ \text{if } X_1 \perp X_2}
+$$
+
+--
+
+- The OLS estimator is the true parameter plus the average across individuals of the individual score
+$$
+\hat{\beta}_\text{ols} = \beta + \frac{\sum_{i}X_{i}u_{i}}{\sum _{i}X_{i}^{2}}
+$$
+
+--
 
 ## Which is the problem?
 
@@ -11,10 +29,29 @@ format: revealjs
 
 ---
 
-## Literature review
+# Literature review
 
-- Model based perpestive on clustering
-- Design based
+---
+
+## Why Cluster?
+- Traditional view: adjust for **within-cluster error correlation**.  
+- Bias in OLS S.E. grows with: strong error correlation, correlated regressors, large clusters.  
+- CRVE relies on **large G** asymptotics.
+
+---
+
+## Fixed G
+- @ibragimov2010t: inference can use **cluster-level estimates**.  
+- If they are (approximately) independent & Gaussian a
+  **t-test** with $t_{G−1}$ is valid even with heterogeneous variances.
+
+---
+
+## The Design-Based Argument
+- Clustering matters because of **sampling or assignment design**, not residual correlation.  
+- Residual correlation is **neither necessary nor sufficient**.  
+- If neither sampling nor treatment assignment is clustered **do not cluster**.  
+- CRVE is often conservative unless effects are homogeneous or clusters are rarely observed.
 
 ---
 
