@@ -4,15 +4,41 @@ author: "Edoardo Di Cosimo"
 format: revealjs
 ---
 
-## Getting up
+## Which is the problem?
 
-- 
-- 
+-  Inference with correlation among cluster of individuals 
+-  Usual White Variance estimator is not consistent
 
 ---
 
-## Going to sleep
+## Literature review
 
-- Get in bed
-- Count sheep
+- Model based perpestive on clustering
+- Design based
 
+---
+
+## Heterogeneous effect
+$$
+y_{ig} = \boldsymbol{\beta}_{g}\mathbf{X}_{ig} + \boldsymbol{\gamma}\mathbf{Z}_{g}+\boldsymbol{u}_{ig}
+$$
+$$
+\boldsymbol{\beta_{g}} = \begin{bmatrix} \alpha _{g} \\ \beta _{g}\end{bmatrix}
+$$
+
+---
+
+## Estimand
+
+- In which parameter are we interested?
+    - $\beta_{\text{APE}}$
+---
+
+## Average Partial Effect
+$$
+ 
+$$
+
+---
+
+##

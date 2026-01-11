@@ -9,8 +9,8 @@
 <link href="slides_files/libs/quarto-html/quarto-syntax-highlighting-7b4406b7675125bc2ba204020e191172.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.22">
 
-  <meta name="author" content="John Doe">
-  <title>Habits</title>
+  <meta name="author" content="Edoardo Di Cosimo">
+  <title>Cluster Robust Variance Estimation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -127,33 +127,31 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Habits</h1>
+  <h1 class="title">Cluster Robust Variance Estimation</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-John Doe 
+Edoardo Di Cosimo 
 </div>
 </div>
 </div>
 
 </section>
-<section id="getting-up" class="slide level2">
-<h2>Getting up</h2>
+<section id="which-is-the-problem" class="slide level2">
+<h2>Which is the problem?</h2>
 <ul>
-<li>Turn off alarm</li>
-<li>Get out of bed</li>
+<li>Inference with correlation among cluster of individuals</li>
+<li>Usual White Variance estimator is not consistent</li>
 </ul>
 </section>
-<section id="going-to-sleep" class="slide level2">
-<h2>Going to sleep</h2>
-<ul>
-<li>Get in bed</li>
-<li>Count sheep</li>
-</ul>
-</section>
-<section class="slide level2">
-
+<section id="heterogeneous-effect" class="slide level2">
+<h2>Heterogeneous effect</h2>
+<p><span class="math display">\[
+y_{ig} = \boldsymbol{\beta}_{g}\mathbf{X}_{ig} + \boldsymbol{\gamma}\mathbf{Z}_{g}+\boldsymbol{u}_{ig}
+\]</span> <span class="math display">\[
+\boldsymbol{\beta_{g}} = \begin{bmatrix} \alpha _{g} \\ \beta _{g}\end{bmatrix}
+\]</span></p>
 
 </section>
     </div>

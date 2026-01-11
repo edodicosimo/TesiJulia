@@ -61,11 +61,14 @@ $$
 Each cluster is a subpopulation with its own distribution, and the overall population is the mixture of all $G$ cluster distributions.
 
 ## Literature Review  
+The common perspective on clustering is what @imbens calls the design-based perspective: clustering adjustments were introduced because of correlation in the unobservables. A comprehensive summary of this view is provided by @cameron2015cluster, who offer a definitive treatment of the design-based framework. They emphasize that the key econometric issue is the within-cluster correlation of regression errors: when errors are correlated within clusters but independent across them, conventional OLS standard errors become biased. Their guide clarifies when this bias is particularly acute—namely when regressors are highly correlated within clusters, when error correlation is strong, and when clusters contain many observations. Cluster-robust variance estimators correct this bias by aggregating information _at the cluster level_, and valid inference relies on the number of clusters (not observations) growing.
+The estimator they describe was first introduced by @white1984asymptotic, @liangzeg and is based on large G asymptotics ($G \to \infty$), its asymptotic properties are discussed in details by @hansen2019asymptotic. We will give a breakdown of it in section @sec-crve.  
+In settings with a fixed number of clusters $G$, a useful reference is @ibragimov2010t. Their main result shows that when the parameter of interest varies across clusters, and when one can consistently estimate each cluster-specific effect, inference can be based on the finite-sample robustness of the classical $t$-test. If the $G$ cluster-level estimates are (asymptotically) independent and approximately Gaussian—with arbitrarily heterogeneous variances—then a standard $t$-test on these $G$ estimates remains conservative at conventional significance levels. Under these conditions, hypotheses about the mean of the cluster-specific effects, which is the average partial effect, can be tested using a $t_{G-1}$ distribution, without requiring consistent estimation of the full variance–covariance structure.   
 The starting point of this thesis is the framework proposed by @imbens, which reframes clustering adjustments as a problem of sampling and assignment design rather than residual correlation.  
-The authors argue that the commonly used CRVE is not robust in the following sense: when clustering is not required, the CRVE does not consistently estimate the asymptotic variance of $\hat{\beta}_{\text{OLS}}$, so that using it as a precautionary default is incorrect. Moreover, they emphasize that a discrepancy between the variance estimated using White’s heteroskedasticity-robust estimator and that obtained using the CRVE does not, by itself, imply that the CRVE is the correct estimator.  
+The authors argue that the commonly used CRVE is not robust in the following sense: when clustering is not required, the CRVE does not consistently estimate the asymptotic variance of $\hat{\beta}_{\text{OLS}}$, so that using it as a precautionary default is incorrect. Moreover, they emphasize that a discrepancy between the variance estimated using White’s heteroskedasticity-robust estimator[@white1980heteroskedasticity] and that obtained using the CRVE does not, by itself, imply that the CRVE is the correct estimator.  
 So what does?  
 What the the authors claim is that cluster adjustment matters not because errors or regressors are correlated within clusters, but because of how the data are generated. 
-What drives the need for clustering adjustment is the design: either the sampling scheme, i.e. the probability of including an individual depends on the cluster she belongs to. Or the experimental design, i.e. treatment assignment itself depends on cluster membership, as in the case of region-specific policies.  
+What drives the need for clustering adjustment is the design: either the sampling scheme, i.e. the probability of including an individual in the sample depends on the cluster she belongs to. Or the experimental design, i.e. treatment assignment itself depends on cluster membership, as in the case of region-specific policies.  
 In this sense, correlations of residuals or regressors inside clusters are neither necessary nor sufficient to justify cluster-robust adjustments.  
 They conclude that the choice between correcting for clustering and not must not depende on the observed correlation, but rather on the assumptions we are making about the data generating process.  
 If neither of the sampling scheme or the assignment mechanism are clustered, then you shall not cluster.  
@@ -563,7 +566,7 @@ plot!(x,y, linewidth =2, label = "White")
 plot!(x,Y, linewidth =2, label = "CRVE")
 ```
 
-## CRVE Matrix
+## CRVE Matrix {#sec-crve}
 
 ### Notation
 We use the same notation as in [@cameron2015cluster]:
