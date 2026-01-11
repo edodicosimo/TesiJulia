@@ -70,9 +70,10 @@ In this sense, correlations of residuals or regressors inside clusters are neith
 They conclude that the choice between correcting for clustering and not must not depende on the observed correlation, but rather on the assumptions we are making about the data generating process.  
 If neither of the sampling scheme or the assignment mechanism are clustered, then you shall not cluster.  
 Moreover they claim that cluster robust variace estimator (CRVE from now on) is too conservative unless:  
-- There are homogeneous effect (i.e. the effect of the treatment is equal for all people in a cluster)
-- You only observe a small fraction of clusters
-- You only sample at most one individual per cluster (in this case the computed S.E. wuold be equals to the one obtained using White's heteroskedasticity robust variance estimator)
+
+* There are homogeneous effect (i.e. the effect of the treatment is equal for all people in a cluster)  
+* You only observe a small fraction of clusters  
+* You only sample at most one individual per cluster (in this case the computed S.E. wuold be equals to the one obtained using White's heteroskedasticity robust variance estimator)  
  
 ## General setup
 In this section, we lay out the general setup that will guide the rest of the thesis.

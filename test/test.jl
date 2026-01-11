@@ -181,8 +181,9 @@ hatBetaG = getBeta(bols.(sam.allclusters))
 sqrt(G) * mean(hatBetaG .- 2)
 
 
-
+#### Scomposizione tra eg e dg
 dg = pop.βg .- 2
+### Questo fa vedere come e_g tende a zero all'aumentare di Ng
 Ngs = [10,100,200,300,1000]
 dNg = Dict()
 for Ng in Ngs
@@ -198,6 +199,7 @@ for Ng in Ngs
     dNg[Ng] = vareg
 end
 
+# Questo fa vedere la varianza di dg
 mus = []
 for _ in 1:1000
     beta = rand(β,G)
@@ -209,3 +211,64 @@ sqrt(var(mus) + 0.0103885)
 
 sqrt(whiteAvar(sam))
 sqrt(CRVE(sam))
+
+
+#### La varianza di betapols non è la media delle varianze di beta g se ho resampling
+         
+allBetaPols = []
+allBetaG = []
+
+for _ in 1:1000
+    beta = rand(β, G)
+    population1 = hePopulation(G, beta, randn(G))
+    sample1 = sample(population1, Ng)
+    bpols = bols(sample1)[2]
+    hatBetag = getBeta(bols.(sample1.allclusters)) .- beta
+    push!(allBetaPols,bpols)
+    push!(allBetaG,hatBetag)
+end
+
+mean(var(reduce(hcat,allBetaG), dims=2))
+
+var(allBetaPols)
+
+
+###########
+ng = 30
+B1 = 1
+B2 = 5
+B = mean([B1,B2])
+
+X1 = randn(ng)
+X2 = randn(ng)
+
+X = reduce(vcat, [X1,X2])
+
+U1 = randn(ng)
+U2 = randn(ng)
+
+S1 = X1 .* U1
+S2 = X2 .* U2
+
+Y1 = X1 .* B1 .+ U1  
+Y2 = X2 .* B2 .+ U2
+
+FakeU1 = Y1 .- X1 .* B
+FakeU2 = Y2 .- X2 .* B 
+
+sigmaSrB = var([mean(FakeU1), mean(FakeU2)]) 
+sigmaSrW = mean([var(FakeU1),var(FakeU2)])
+sigmaSrT = var(vcat(FakeU1,FakeU2))
+
+
+mean(FakeU1)
+mean(FakeU2)
+x = -10:0.1:10
+
+Y = reduce(vcat,[Y1,Y2])
+
+p = scatter(Y1,X1)
+scatter!(Y2,X2)
+# plot!(p, x, B1 .* x, label="B1")
+# plot!(p, x, B2 .* x, label="B2")
+
