@@ -318,3 +318,83 @@ scatter!(Y2,X2)
 # plot!(p, x, B1 .* x, label="B1")
 # plot!(p, x, B2 .* x, label="B2")
 
+
+
+Ngs = [20, 50, 100, 200, 300]
+Gs = [5, 10, 20, 50, 100]
+
+crve_white_diff = Dict()
+total_var = Dict()
+egDict = Dict()
+dgDict = Dict()
+betaDict = Dict()
+
+for G in Gs
+    for Ng in Ngs
+
+        eg_mat = Float64[]
+        dg_mat = Float64[]
+        betaHatOls = Float64[]
+        crve_est = Float64[]
+        white_est = Float64[]
+
+        for _ in 1:1000
+            beta1 = rand(β,G)
+            pop = hePopulation(G,beta1,randn(G))
+            sam = sample(pop, Ng)
+            beta_hat_g = getBeta(bols.(sam.allclusters))
+
+            betaHat = bols(sam)
+            push!(betaHatOls, betaHat[2])
+
+            eg = beta_hat_g .- beta1
+            push!(eg_mat, var(eg))
+
+            dg = beta1 .- 2
+            push!(dg_mat, mean(dg))
+
+            push!(crve_est, CRVE(sam)[2,2])
+            push!(white_est, whiteAvar(sam)[2,2])
+        end
+
+        diff = (mean(crve_est) - mean(white_est)) 
+        crve_white_diff[(Ng, G)] = diff
+        
+        dgDict[(Ng,G)] = dg_mat
+        egDict[(Ng,G)] = eg_mat
+        betaDict[(Ng,G)] = betaHatOls
+        total_var[(Ng, G)] = var(eg_mat) + var(dg_mat)
+    end
+end
+
+var_decomp = Dict()
+
+for G in Gs
+    for Ng in Ngs
+        b   = betaDict[(Ng, G)]
+        egv = egDict[(Ng, G)]
+        dgm = dgDict[(Ng, G)]
+
+        lhs = var(b)
+        rhs = var(dgm) + mean(egv)
+
+        var_decomp[(Ng, G)] = (
+            var_bols        = lhs,
+            var_dg_plus_eg  = rhs,
+            diff            = lhs - rhs,
+            rel_diff        = (lhs - rhs) / lhs
+        )
+    end
+end
+
+plt = plot(xlabel = "Ng", ylabel = "Relative diff", title = "Decomposition error by Ng and G")
+
+for G in sort(Gs)
+    rels = [var_decomp[(Ng, G)].rel_diff for Ng in sort(Ngs)]
+    plot!(sort(Ngs), rels, marker = :circle, label = "G = $G")
+end
+
+
+
+
+display(plt)

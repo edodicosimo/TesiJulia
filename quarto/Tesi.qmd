@@ -614,6 +614,102 @@ plot(
 )
 ```
 
+### Decomposition montecarlo
+Le us now investigate how well the variance of the pooled OLS estimator can be decomposed into the two components introduced above, the within-cluster estimation error $e_g$ and the between-cluster heterogeneity $d_g$. To do this, we run a two-dimensional simulation over a grid of cluster sizes $N_g \in \{20, 50, 100, 200, 300\}$ and numbers of clusters $G \in \{5, 10, 20, 50, 100\}$. For each pair $(N_g, G)$, we repeatedly draw a vector of heterogeneous coefficients $\beta_g$, generate a synthetic population, and then extract a sample of size $N_g$ from every cluster. In each repetition, we re-estimate all cluster-level coefficients $\hat{\beta}_g$, compute the estimation errors $e_g = \hat{\beta}_g - \beta_g$, the heterogeneity terms $d_g = \beta_g - \beta _{\text{APE}}$, and obtain the pooled OLS estimate $\hat{\beta}_{\text{ols}}$.  
+We record:  
+
+1. the sampling variability of the $e_g$’s,  
+2. the dispersion of the $d_g$’s,  
+3. the variance of the pooled estimator across repetitions, and  
+4. the White and CRVE variance estimates for each sample.
+With these objects in hand, we directly test the decomposition
+$$
+\operatorname{Var}(\hat{\beta}_{\text{ols}})
+\;\approx\;
+\operatorname{Var}(d_g)
+\;+\;
+\mathbb{E}\left[ \operatorname{Var}(e_g) \right]
+$$
+where the right-hand side is obtained from the simulated cluster-level quantities. For every $(N_g, G)$, we compare the empirical variance of $\hat{\beta}_{\text{ols}}$ with the sum of these two components and compute the relative discrepancy. The results reveal a very clear pattern. When either the number of clusters or the cluster size is large, the decomposition works almost perfectly: both the heterogeneity term $d_g$ and the sampling component $e_g$ are measured very precisely, so their sum closely matches the variability of the pooled estimator. When both $G$ and $N_g$ are small, however, the approximation naturally worsens. In this case, the cluster-level estimates are noisier, the differences between clusters appear more dispersed than they truly are, and the overall variability of $\hat{\beta}_{\text{ols}}$ is not yet captured well by the decomposition. The plot of the relative error across $(N_g, G)$ makes this pattern clear, showing that the mismatch quickly fades as we increase either the number of clusters or their size.
+
+```{julia}
+Ngs = [20, 50, 100, 200, 300]
+Gs = [5, 10, 20, 50, 100]
+
+crve_white_diff = Dict()
+total_var = Dict()
+egDict = Dict()
+dgDict = Dict()
+betaDict = Dict()
+
+for G in Gs
+    for Ng in Ngs
+
+        eg_mat = Float64[]
+        dg_mat = Float64[]
+        betaHatOls = Float64[]
+        crve_est = Float64[]
+        white_est = Float64[]
+
+        for _ in 1:1000
+            beta1 = rand(β,G)
+            pop = hePopulation(G,beta1,randn(G))
+            sam = sample(pop, Ng)
+            beta_hat_g = getBeta(bols.(sam.allclusters))
+
+            betaHat = bols(sam)
+            push!(betaHatOls, betaHat[2])
+
+            eg = beta_hat_g .- beta1
+            push!(eg_mat, var(eg))
+
+            dg = beta1 .- 2
+            push!(dg_mat, mean(dg))
+
+            push!(crve_est, CRVE(sam)[2,2])
+            push!(white_est, whiteAvar(sam)[2,2])
+        end
+
+        diff = (mean(crve_est) - mean(white_est)) 
+        crve_white_diff[(Ng, G)] = diff
+        
+        dgDict[(Ng,G)] = dg_mat
+        egDict[(Ng,G)] = eg_mat
+        betaDict[(Ng,G)] = betaHatOls
+        total_var[(Ng, G)] = var(eg_mat) + var(dg_mat)
+    end
+end
+
+var_decomp = Dict()
+
+for G in Gs
+    for Ng in Ngs
+        b   = betaDict[(Ng, G)]
+        egv = egDict[(Ng, G)]
+        dgm = dgDict[(Ng, G)]
+
+        lhs = var(b)
+        rhs = var(dgm) + mean(egv)
+
+        var_decomp[(Ng, G)] = (
+            var_bols        = lhs,
+            var_dg_plus_eg  = rhs,
+            diff            = lhs - rhs,
+            rel_diff        = (lhs - rhs) / lhs
+        )
+    end
+end
+
+plt = plot(xlabel = "Ng", ylabel = "Relative diff", title = "Decomposition error by Ng and G",ms= 5)
+
+for G in sort(Gs)
+    rels = [var_decomp[(Ng, G)].rel_diff for Ng in sort(Ngs)]
+    plot!(sort(Ngs), rels, marker = :circle, label = "G = $G")
+end
+
+display(plt)
+```
+
 ### All cluster observed and no endogeneity
 So if there is no endogeneity I can consistently estimate the AVar of each $\hat{\beta_{g}}$ using White variance estimator, let's test this using the montecarlo method.
 
