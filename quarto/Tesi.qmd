@@ -672,7 +672,6 @@ plot!(x,Y, linewidth =2, label = "CRVE")
 ## CRVE Matrix {#sec-crve}
 
 ### Notation
-### Notation
 We use clusters indexed by $g = 1,\dots,G$, and units within clusters indexed by $i = 1,\dots, N_g$.  
 Each observation has $k$ regressors.
 $$
@@ -880,36 +879,69 @@ $$
 
 
 ### Difference from White
-Let's look at the difference between the White covariance matrix and the CRVE. Imagine we have a cluster of 2 observations, the White inner matrix would like this: 
+
+Starting from the variance–covariance matrix of the estimated score,
 $$
-B_{\text{W}}=
+\hat S \hat S' = X' \hat u \hat u' X,
+$$
+whose $(i,j)$-th element is $x_i x_j\,\hat u_i \hat u_j$, we can think of White’s estimator and the cluster-robust estimator as applying different *selector matrices* to this full matrix of cross-products.
+
+For White, the selector keeps only the diagonal elements. The inner matrix becomes
+$$
+\operatorname{diag}(\hat u_1^2,\ldots,\hat u_n^2),
+$$
+so only terms with $i=j$ are retained. Computing White cluster-wise (i.e., within each cluster and then summing) selects exactly the same diagonal elements as doing it pooled.
+
+For the cluster-robust variance estimator (CRVE), the selector keeps all pairs $(i,j)$ such that observations $i$ and $j$ belong to the same cluster. This retains all within-cluster covariances and zeroes all cross-cluster terms.
+
+To see this concretely, consider one cluster with three observations $i=1,2,3$. The **White** inner matrix for that cluster is:
+$$
+B_{\text{W}} =
 \begin{bmatrix}
-\hat{u_{1}}^{2} & 0  \\
-0 & \hat{u_{2}^{2}}  \\
-\end{bmatrix}
-$$
-While the CRVE would look like this:
-$$
-B_{\text{C}}=
-\begin{bmatrix}
-\hat{u}_1^2 & \hat{u}_1 \hat{u}_2 & \hat{u}_1 \hat{u}_3 \\
-\hat{u}_1 \hat{u}_2  & \hat{u}_2^2          & \hat{u}_2 \hat{u}_3 \\
-\hat{u}_1 \hat{u}_3  & \hat{u}_2 \hat{u}_3  & \hat{u}_3^2
-\end{bmatrix}
-$$
-So when I then pre and post multiply by $X$:
-$$
-X'B_{\text{W}}X = x_{1}^{2}u_{1}^{2}+ x_{2}^{2}u_{2}^{2}=\sum _{i}x_{i}^{2}u_{i}^{2}
-$$
-$$
-X'B_{\text{C}}X= x_1^2 \hat{u}_1^{2}
-+ x_2^2 \hat{u}_2^{2}
-+ x_3^2 \hat{u}_3^{2}
-+ 2 \left(
-x_1 x_2 \hat{u}_1 \hat{u}_2
-+ x_1 x_3 \hat{u}_1 \hat{u}_3
-+ x_2 x_3 \hat{u}_2 \hat{u}_3
-\right) = X'B_{\text{W}}X +2 \sum _{i}\sum _{\ne j}x_{i}x_{j}\hat{u_{i}}\hat{u_{j}}
+\hat u_1^{2} & 0            & 0 \\
+0            & \hat u_2^{2} & 0 \\
+0            & 0            & \hat u_3^{2}
+\end{bmatrix}.
 $$
 
+The CRVE inner matrix is:
+$$
+B_{\text{C}} =
+\begin{bmatrix}
+\hat u_1^{2}      & \hat u_1\hat u_2 & \hat u_1\hat u_3 \\
+\hat u_1\hat u_2  & \hat u_2^{2}      & \hat u_2\hat u_3 \\
+\hat u_1\hat u_3  & \hat u_2\hat u_3  & \hat u_3^{2}
+\end{bmatrix}.
+$$
 
+After pre- and post-multiplying by the cluster design matrix $X_g$, the **White** term becomes:
+$$
+X_g' B_{\text{W}} X_g
+= x_1^2 \hat u_1^2 + x_2^2 \hat u_2^2 + x_3^2 \hat u_3^2
+= \sum_{i \in g} x_i^2\,\hat u_i^2.
+$$
+
+For CRVE:
+$$
+\begin{aligned}
+X_g' B_{\text{C}} X_g
+&= x_1^2 \hat u_1^2 + x_2^2 \hat u_2^2 + x_3^2 \hat u_3^2 \\
+&\quad + 2\!\left(
+x_1 x_2 \hat u_1 \hat u_2
++ x_1 x_3 \hat u_1 \hat u_3
++ x_2 x_3 \hat u_2 \hat u_3
+\right).
+\end{aligned}
+$$
+
+Thus,
+$$
+X_g' B_{\text{C}} X_g
+=
+X_g' B_{\text{W}} X_g
++
+2\sum_{\substack{i,j\in g \\ i<j}}
+x_i x_j\,\hat u_i \hat u_j.
+$$
+
+The only difference between White and CRVE is exactly these additional within-cluster cross-products. These terms capture intra-cluster dependence and are the mechanism through which CRVE adjusts for correlated errors within clusters.
