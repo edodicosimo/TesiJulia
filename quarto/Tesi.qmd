@@ -672,48 +672,67 @@ plot!(x,Y, linewidth =2, label = "CRVE")
 ## CRVE Matrix {#sec-crve}
 
 ### Notation
-We use the same notation as in [@cameron2015cluster]:
+### Notation
+We use clusters indexed by $g = 1,\dots,G$, and units within clusters indexed by $i = 1,\dots, N_g$.  
+Each observation has $k$ regressors.
 $$
-\mathbf{X_{ig}}=
+\mathbf{X}_{ig}
+=
 \begin{bmatrix}
-x_{1ig}, &  x_{2ig}, &  \dots  & x_{kig} 
+x_{1ig}, & x_{2ig}, & \dots & x_{kig}
 \end{bmatrix}
 $$
+This is the row vector of regressors for unit $i$ in cluster $g$.
 $$
-\mathbf{X_{g}}= \begin{bmatrix}
-\mathbf{X_{ig}} \\
-\mathbf{X_{jg}} \\  
-\dots  \\
-\mathbf{X_{N_{g}g}}
-\end{bmatrix} = 
+\mathbf{X}_g
+=
 \begin{bmatrix}
-x_{1ig}, &  x_{2ig}, &  \dots  & x_{kig}  \\
-x_{1ij}, &  x_{2jg}, &  \dots  & x_{kjg}  \\
+\mathbf{X}_{1g} \\
+\mathbf{X}_{2g} \\
 \dots \\
-x_{1N_{g}g}, &  x_{2N_{g}g}, &  \dots  & x_{kN_{g}g} 
+\mathbf{X}_{N_g g}
+\end{bmatrix}
+=
+\begin{bmatrix}
+x_{1ig} & x_{2ig} & \dots & x_{kig} \\
+x_{1jg} & x_{2jg} & \dots & x_{kjg} \\
+\dots \\
+x_{1N_g g} & x_{2N_g g} & \dots & x_{kN_g g}
 \end{bmatrix}
 $$
+This matrix has dimension $N_g \times k$ and stacks all regressors in cluster $g$.
+Full regressor matrix stacks all the clusters one on top of the other
+$$
+\mathbf{X}
+=
+\begin{bmatrix}
+\mathbf{X}_1 \\
+\mathbf{X}_2 \\
+\dots \\
+\mathbf{X}_G
+\end{bmatrix}
+$$
+Equivalently, written by expanding the blocks:
 $$
 \mathbf{X} =
 \begin{bmatrix}
 \mathbf{X_{ig}} \\
 \mathbf{X_{jg}} \\
 \dots \\
-\mathbf{X_{N_{g}g}} \\
-\\
+\mathbf{X_{N_g g}} \\
 \mathbf{X_{ih}} \\
 \mathbf{X_{jh}} \\
 \dots \\
-\mathbf{X_{N_{h}h}} \\
-\\
+\mathbf{X_{N_h h}} \\
 \dots \\
-\\
 \mathbf{X_{iG}} \\
 \mathbf{X_{jG}} \\
 \dots \\
-\mathbf{X_{N_{G}G}}
+\mathbf{X_{N_G G}}
 \end{bmatrix}
 $$
+
+This is an $N \times k$ matrix, where $N = \sum_{g=1}^G N_g$, obtained by stacking clusters one after another.
 The key intuition underlying cluster-robust variance estimation (CRVE) is that dependence is allowed within clusters, while clusters themselves are assumed to be asymptotically independent. Consequently, asymptotic inference is driven by the number of clusters rather than by the total number of individual observations.   
 This reasoning is consistent with the general principle emphasized by @ibragimov2010t, namely that the consistency of robust variance estimators relies on averaging over an asymptotically large number of essentially uncorrelated units. In the case of clustered standard errors, consistency is achieved by aggregating information across an increasing number of independent clusters, in direct analogy with heteroskedasticity-robust estimators averaging over independent disturbances or long-run variance estimators averaging over weakly dependent frequency components. Assuming that $\mathbb{E}\left[ \mathbf{X'_{g}u_{g}} \right]=0$, $\hat{\beta}_\text{ols}$ will be a consistent estimator of the population parameter $\beta$ if $G \to \infty$ [@wooldridge2010econometric]. To understand this note that computing $\beta$:
 $$
