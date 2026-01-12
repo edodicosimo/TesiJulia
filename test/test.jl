@@ -398,3 +398,45 @@ end
 
 
 display(plt)
+
+
+dgVar = Dict{Tuple{Int,Int},Float64}()
+
+for ((Ng, G), dg_vals) in dgDict
+    dgVar[(Ng, G)] = var(dg_vals)
+end
+
+# Compare diff (CRVE - White) to Var(mean(dg))
+results = Dict{Tuple{Int,Int},NamedTuple}()
+
+for key in keys(crve_white_diff)
+    diff = crve_white_diff[key]
+    vdg  = dgVar[key]
+
+    results[key] = (
+        diff              = diff,
+        var_mean_dg       = vdg,
+        abs_diff          = diff - vdg,
+        rel_error         = (diff - vdg) / vdg,
+    )
+end
+
+# Extract data
+Ng_vals = [k[1] for k in keys(results)]
+G_vals  = [k[2] for k in keys(results)]
+diffs   = [results[k].diff for k in keys(results)]
+vdgs    = [results[k].var_mean_dg for k in keys(results)]
+
+scatter(
+    vdgs,
+    diffs;
+    marker_z = G_vals,       # COLOR based on G
+    xlabel = L"\mathrm{Var}(\bar d_g)",
+    ylabel = L"\mathbb{E}[\widehat{\mathrm{Var}}_{\text{CRVE}}] - \mathbb{E}[\widehat{\mathrm{Var}}_{\text{White}}]",
+    title = "CRVE − White vs Var(mean(d_g))",
+    ms = 8,
+    colorbar_title = L"G",
+    legend = false,
+)
+
+plot!(identity; lw=2, ls=:dash, label=false)
