@@ -182,7 +182,6 @@ sqrt(G) * mean(hatBetaG .- 2)
 
 
 #### Scomposizione tra eg e dg
-dg = pop.βg .- 2
 ### Questo fa vedere come e_g tende a zero all'aumentare di Ng
 Ngs = [10,100,200,300,1000]
 dNg = Dict()
@@ -198,6 +197,22 @@ for Ng in Ngs
     vareg = mean([var(e) for e in values(d)])
     dNg[Ng] = vareg
 end
+xs = sort(collect(keys(dNg)))
+ys = [dNg[n] for n in xs]
+
+plot(
+    xs,
+    ys;
+    xlabel = L"N_g",
+    ylabel = L"\mathbb{E}[\mathrm{Var}(e_g)]",
+    title = "Decay of Within-Cluster Sampling Error",
+    lw = 3,
+    ms = 5,
+    marker = :circle,
+    legend = false,
+    grid = :on,
+    dpi = 300,
+)
 
 # Questo fa vedere la varianza di dg
 mus = []
@@ -208,6 +223,37 @@ for _ in 1:1000
     push!(mus,m)
 end
 sqrt(var(mus) + 0.0103885)
+
+Gs = [5, 10, 20, 50, 100]
+dG = Dict()
+
+for G in Gs
+    mus = Float64[]
+    for _ in 1:1000
+        beta = rand(β, G)
+        dg = beta .- 2
+        m = mean(dg)
+        push!(mus, m)
+    end
+    dG[G] = var(mus)
+end
+
+xs = sort(collect(keys(dG)))
+ys = [dG[g] for g in xs]
+
+plot(
+    xs,
+    ys;
+    xlabel = L"G",
+    ylabel = L"\mathrm{Var}(\overline{d}_g)",
+    title = "Variance of Mean Deviations as G Increases",
+    lw = 3,
+    ms = 5,
+    marker = :circle,
+    legend = false,
+    grid = :on,
+    dpi = 300,
+)
 
 sqrt(whiteAvar(sam))
 sqrt(CRVE(sam))
