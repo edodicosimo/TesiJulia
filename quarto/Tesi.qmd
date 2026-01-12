@@ -84,9 +84,9 @@ We will assume the following model
 $$
 y_{ig} = \boldsymbol{\beta}_{g}\mathbf{X}_{ig} + \boldsymbol{\gamma}\mathbf{Z}_{g}+\boldsymbol{u}_{ig} 
 $$
-So there are two groups of regressors, the one that varies only at the cluster level and the one that varies also at the individual level.
-We assume that there are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.
-The average across clusters of $\beta_{g}$ we will cal $\beta _{\text{APE}}$, where APE stands for Average Partial Effect.
+So there are two groups of regressors, the one that varies only at the cluster level and the one that varies also at the individual level.  
+We assume that there are heterogeneous effect across clusters, this means that the true parameter $\beta$ is different in every cluster.  
+The average across clusters of $\beta_{g}$ we will cal $\beta _{\text{APE}}$, where APE stands for Average Partial Effect.  
 We model $u_{ig}$ has having a cluster component and an individual-and-cluster component:
 $$
 u_{ig}= c_{g}+v_{ig}
@@ -495,7 +495,7 @@ The mean across clusters of these estimated parameters is the usual pooled OLS e
 $$
 \hat{\beta}_\text{pols} = \beta _{\text{APE}}+\frac{1}{G}\sum _{g}d_{g}+ \frac{1}{G}\sum _{g=1}^{G}  e_{g}
 $$
-$\frac{1}{G}\sum _{g=1}^{G}d_{g}\xrightarrow{p}0, \frac{1}{G}\sum _{g=1}^{G}e_{g}\xrightarrow{p}0$.
+$\frac{1}{G}\sum _{g=1}^{G}d_{g}\xrightarrow{p}0, \frac{1}{G}\sum _{g=1}^{G}e_{g}\xrightarrow{p}0$.  
 We now demonstrate, by means of Monte Carlo simulations, that the asymptotic variance of each $\hat{\beta_{g}}$​ ($V_{g}$) can be consistently estimated using the White heteroskedasticity-robust variance estimator.  
 For each cluster, we compute the White heteroskedasticity-robust variance estimate of $\hat{\beta}_g$. We then compare this quantity to the Monte Carlo variance of $\hat{\beta}_g$, obtained from repeated resampling. The histogram plots the difference between the White-based variance estimate and the Monte Carlo variance across clusters, while the printed average summarizes the mean discrepancy, providing evidence on the consistency of the White estimator for $V_g$.
 ```{julia}
@@ -509,7 +509,18 @@ $$
 $$
 \sqrt{ G }\left( \hat{\beta}_\text{pols}-\beta _{\text{APE}} \right) \xrightarrow{d}\mathcal{N}(0,)
 $$
-
+Note that computing the White variance estimator in the whole population (so for the Asymptotic variance of the pooled OLS) is equivalent to averaging across cluster the estimated variances of each $\hat{\beta_{g}}$ using White.
+$$
+\widehat{\operatorname{Var}}(\hat{\beta})
+\;\approx\;
+\frac{1}{G}\times
+\left(
+    \underbrace{
+    \frac{1}{G}\sum_{g=1}^G \widehat{\operatorname{Var}}(\hat{\beta}_g)
+    }_{\text{Average of Cluster Variances}}
+\right)
+$$
+Computing the variance of the pooled OLS estimator like this mirrors the @fama1973risk approach. 
 
 ### All cluster observed and no endogeneity
 So if there is no endogeneity i can consistently estimate the AVar of each $\hat{\beta_{g}}$ using White variance estimator, let's test this using the montecarlo method.

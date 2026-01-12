@@ -13,19 +13,42 @@ $$
 \underbrace{\text{cov}(X_{1},X_{2})}_{=0\ \text{if } X_1 \perp X_2}
 $$
 
---
-
-- The OLS estimator is the true parameter plus the average across individuals of the individual score
+- The OLS estimator can be written as the true parameter plus a sample (weighted) average of individual scores
 $$
 \hat{\beta}_\text{ols} = \beta + \frac{\sum_{i}X_{i}u_{i}}{\sum _{i}X_{i}^{2}}
 $$
 
---
+---
+
+## Asymptotic
+
+- To conduct hypothesis tests we need the asymptotic distribution of our estimators
+- I.e. we need to understand how the estimator would behave under repeated sampling.
+$$
+\sqrt{ N }\left( \hat{\beta}_\text{ols} - \beta \right) = \frac{\frac{1}{\sqrt{ N }}\sum_{i}X_{i}u_{i}}{\frac{1}{N}\sum _{i}X_{i}^{2}}
+$$
+
+---
+
+- Focus on the numerator 
+$$
+\frac{1}{\sqrt{ N }}\sum_{i}X_{i}u_{i}
+$$
+- This is a sum of $N$ random varianbles
+- If they are all independent:
+$$
+\xrightarrow{d} \mathcal{N}\left( 0,  \frac{1}{N} \sum_{i}\operatorname{Var}(X_{i}u_{i}) \right)
+$$
+
+---
 
 ## Which is the problem?
 
--  Inference with correlation among cluster of individuals 
+-  Inside a cluster the scores of 2 individuals are not independent
 -  Usual White Variance estimator is not consistent
+$$
+\frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0, \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i}) + \frac{2}{N}\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i}u_{i},X_{j}u_{j})\right)
+$$
 
 ---
 
@@ -72,10 +95,6 @@ $$
 ---
 
 ## Average Partial Effect
-$$
- 
-$$
 
 ---
 
-##
