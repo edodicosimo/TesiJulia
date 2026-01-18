@@ -311,7 +311,8 @@ p = plot(
     fillrange = 0,
     fillalpha = 0.30,
     linewidth = 2,
-    label = "Var(d_g) + E[Var(e_g)]",
+    top_margin = 14Plots.mm,
+    label = "Our decomposition",
     xscale = :log10,
     dpi = 300
 )
@@ -320,7 +321,7 @@ plot!(
     p,
     x, var_ols;
     linewidth = 2,
-    label = "Monte Carlo Var(β̂ₒₗₛ)"
+    label = "Monte Carlo Variance"
 )
 
 plot!(
@@ -329,11 +330,30 @@ plot!(
     fillrange = lo,
     fillalpha = 0.20,
     linewidth = 0,
-    label = "|Var(β̂ₒₗₛ) − [Var(d_g) + E Var(e_g)]|"
+    label = "Empirical - Estimated Variance"
 )
 
-xlabel!(p, "Number of clusters G (= cluster size N_g)")
-ylabel!(p, "Variance of the OLS estimator")
+xlabel!(p, "Number of clusters (= cluster size)")
+ylabel!(p, "Variance")
+
+subtitle_txt = "When either \$G\$ or \$N_g\$ is large:\n" *
+               "• \$d_g\$ and \$e_g\$ are measured very precisely.\n" *
+               "• \$\\operatorname{Var}(d_g) + \\mathbb{E}[\\operatorname{Var}(e_g)]\$ closely matches\n" *
+               "  \$\\operatorname{Var}(\\hat{\\beta}_{\\mathrm{ols}})\$."
+
+# place using axis-fraction coordinates: (0,0)=bottom-left, (1,1)=top-right
+annotate!(
+    p,
+    (0.02, 1.2),
+    text(
+        subtitle_txt,
+        9,
+        :left,
+        :top,
+        RGB(0, 0, 0)
+    );
+    annotationcoords = :axes
+)
 
 display(p)
 savefig(p, "quarto/assets/decompositionOfBetaOLS.pdf")

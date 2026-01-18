@@ -207,13 +207,16 @@
 \title{Cluster Robust Variance Estimation}
 \author{Edoardo Di Cosimo}
 \date{}
+\institute{Sapienza University of Rome}
 
 \begin{document}
 \frame{\titlepage}
 
 
+\section{Introduction}\label{introduction}
+
 \begin{frame}{Introduction}
-\phantomsection\label{introduction}
+\phantomsection\label{introduction-1}
 \begin{itemize}
 \tightlist
 \item
@@ -287,15 +290,12 @@
   Sample with \(N\) individuals grouped in \(G\) clusters:\\
   \(X_{ig} = (X_{11},\dots,X_{N_1 1},\; X_{12},\dots,X_{N_2 2},\dots,X_{N_G G})\)\\
 \item
-  For \(i,j\) in the same cluster \(g\):\\
-  \[
-  P(X_i > E[X] \mid X_j > E[X]) > P(X_i > E[X])
-  \]
-\item
-  Cluster \(g\) can be seen as a \textbf{subpopulation}:\\
+  Each cluster can be seen as a \textbf{subpopulation}:\\
   \[
   X_g = \{X_i: i \in g\}
   \]
+\item
+  Individuals inside a cluster share unobserved correlations
 \end{itemize}
 \end{frame}
 
@@ -324,12 +324,17 @@
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+\end{frame}
+
+\section{Montecarlo Experiment}\label{montecarlo-experiment}
+
 \begin{frame}{Assumptions on the DGP}
 \phantomsection\label{assumptions-on-the-dgp}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Two-stage sampling in all frameworks}:
+  Two-stage sampling:
 
   \begin{enumerate}
   \tightlist
@@ -359,14 +364,6 @@
     clusters and individuals are re-sampled each time\\
   \item
     \textbf{two sources of randomness}:
-
-    \begin{itemize}
-    \tightlist
-    \item
-      cluster selection\\
-    \item
-      unit-level sampling
-    \end{itemize}
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -497,7 +494,7 @@
   Goal: assess how well \[
   \operatorname{Var}(\hat{\beta}_{\text{ols}})
   \approx
-  \operatorname{Var}(d_g)
+  \operatorname{Var}(\bar{d_g})
   +
   \mathbb{E}\!\left[ \operatorname{Var}(e_g) \right]
   \] holds in finite samples.
@@ -578,35 +575,6 @@
 
 \begin{frame}{Performance of the Decomposition}
 \phantomsection\label{performance-of-the-decomposition}
-\begin{itemize}
-\tightlist
-\item
-  When either \(G\) or \(N_g\) is large:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \(d_g\) and \(e_g\) are measured very precisely.
-  \item
-    \(\operatorname{Var}(d_g) + \mathbb{E}[\operatorname{Var}(e_g)]\)\\
-    closely matches \(\operatorname{Var}(\hat{\beta}_{\text{ols}})\).
-  \end{itemize}
-\item
-  When both \(G\) and \(N_g\) are small:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    cluster-level estimates are noisy;
-  \item
-    between-cluster dispersion is overstated;
-  \item
-    the decomposition is a poorer approximation.
-  \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
 \begin{center}
 \includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{assets/decompositionOfBetaOLS.pdf}
 \end{center}
@@ -702,6 +670,49 @@
   \] and this relationship strengthens as the number of clusters \(G\)
   grows.
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\section{Conclusions}\label{conclusions}
+
+\begin{frame}{Conclusions}
+\phantomsection\label{conclusions-1}
+\begin{itemize}
+\tightlist
+\item
+  The Variance of OLS can be decomposed as:\\
+  \[
+  \operatorname{Var}(\hat{\beta}_{\text{ols}})
+  \approx
+  \operatorname{Var}(\bar{d_g})
+  +
+  \mathbb{E}\!\left[ \operatorname{Var}(e_g) \right]
+  \]
+\item
+  CRVE estimates White + \(\operatorname{Var}(\bar{d}_g)\)
+\item
+  So if \(\operatorname{Var}(\bar{d}_g) \approx 0\) we should use White
+\item
+  This happens if:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    There is no resampling (\(G\) is fixed)
+  \item
+    \(G\) is really high
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain]{}
+\phantomsection\label{section}
+\centering
+\vspace*{\fill}
+
+\Huge \textbf{Thanks!} \vspace*{\fill}
 \end{frame}
 
 \begin{frame}

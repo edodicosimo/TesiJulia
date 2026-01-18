@@ -1,6 +1,7 @@
 ---
 title: "Cluster Robust Variance Estimation"
 author: "Edoardo Di Cosimo"
+institute: "Sapienza University of Rome"
 format: 
   beamer:
     theme: sintef   # This tells LaTeX to look for beamerthemesintef.sty
@@ -9,6 +10,10 @@ header-includes:
   - \titlebackground*{assets/background} # Sets the title slide background image
   # You can uncomment the line below if you want to force specific logo usage
   # - \newcommand{\logo}{assets/logo_RGB}
+---
+
+# Introduction
+
 ---
 
 ## Introduction
@@ -65,14 +70,11 @@ $$
 
 - Sample with $N$ individuals grouped in $G$ clusters:  
   $X_{ig} = (X_{11},\dots,X_{N_1 1},\; X_{12},\dots,X_{N_2 2},\dots,X_{N_G G})$  
-- For $i,j$ in the same cluster $g$:  
-  $$
-  P(X_i > E[X] \mid X_j > E[X]) > P(X_i > E[X])
-  $$
-- Cluster $g$ can be seen as a **subpopulation**:  
+- Each cluster can be seen as a **subpopulation**:  
   $$
   X_g = \{X_i: i \in g\}
   $$
+- Individuals inside a cluster share unobserved correlations
 
 ---
 
@@ -94,9 +96,13 @@ $$
 
 ---
 
+# Montecarlo Experiment
+
+---
+
 ## Assumptions on the DGP
 
-- **Two-stage sampling in all frameworks**:
+- Two-stage sampling:
   1. sample clusters  
   2. sample individuals within clusters  
 
@@ -108,8 +114,6 @@ $$
 - **Increasing number of clusters ($G \to \infty$)**  
   - clusters and individuals are re-sampled each time  
   - **two sources of randomness**:
-    - cluster selection  
-    - unit-level sampling
 
 ---
 
@@ -223,7 +227,7 @@ $$
   $$
   \operatorname{Var}(\hat{\beta}_{\text{ols}})
   \approx
-  \operatorname{Var}(d_g)
+  \operatorname{Var}(\bar{d_g})
   +
   \mathbb{E}\!\left[ \operatorname{Var}(e_g) \right]
   $$
@@ -258,20 +262,10 @@ $$
   - $\operatorname{Var}(d_g)$ and $\mathbb{E}[\operatorname{Var}(e_g)]$
   - relative discrepancy.
 
+
 ---
 
 ## Performance of the Decomposition
-
-- When either $G$ or $N_g$ is large:
-  - $d_g$ and $e_g$ are measured very precisely.
-  - $\operatorname{Var}(d_g) + \mathbb{E}[\operatorname{Var}(e_g)]$  
-    closely matches $\operatorname{Var}(\hat{\beta}_{\text{ols}})$.
-- When both $G$ and $N_g$ are small:
-  - cluster-level estimates are noisy;
-  - between-cluster dispersion is overstated;
-  - the decomposition is a poorer approximation.
-
----
 
 ![](assets/decompositionOfBetaOLS.pdf){fig-align="center" width=100%}
 
@@ -327,6 +321,38 @@ $$
   \operatorname{Var}(\bar d_g),
   $$
   and this relationship strengthens as the number of clusters $G$ grows.
+
+---
+
+# Conclusions
+
+---
+
+## Conclusions
+
+
+- The Variance of OLS can be decomposed as:  
+$$
+  \operatorname{Var}(\hat{\beta}_{\text{ols}})
+  \approx
+  \operatorname{Var}(\bar{d_g})
+  +
+  \mathbb{E}\!\left[ \operatorname{Var}(e_g) \right]
+  $$ 
+- CRVE estimates White + $\operatorname{Var}(\bar{d}_g)$
+- So if $\operatorname{Var}(\bar{d}_g) \approx 0$ we should use White
+- This happens if:
+  - There is no resampling ($G$ is fixed)
+  - $G$ is really high
+
+---
+
+## {.plain}
+
+\centering
+\vspace*{\fill}
+\Huge \textbf{Thanks!}
+\vspace*{\fill}
 
 ---
 
