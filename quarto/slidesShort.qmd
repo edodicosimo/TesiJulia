@@ -1,7 +1,14 @@
 ---
 title: "Cluster Robust Variance Estimation"
 author: "Edoardo Di Cosimo"
-format: beamer
+format: 
+  beamer:
+    theme: sintef   # This tells LaTeX to look for beamerthemesintef.sty
+    keep-tex: true  # Useful for debugging if things go wrong
+header-includes:
+  - \titlebackground*{assets/background} # Sets the title slide background image
+  # You can uncomment the line below if you want to force specific logo usage
+  # - \newcommand{\logo}{assets/logo_RGB}
 ---
 
 ## Introduction
