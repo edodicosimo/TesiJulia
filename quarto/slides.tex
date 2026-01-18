@@ -1,0 +1,1616 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  ignorenonframetext,
+]{beamer}
+\newif\ifbibliography
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% remove section numbering
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{section title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{subsection title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+
+\usetheme[noslidenumber]{sintef}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+\usepackage{caption}
+% Make caption package work with longtable
+\makeatletter
+\def\fnum@table{\tablename~\thetable}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Cluster Robust Variance Estimation},
+  pdfauthor={Edoardo Di Cosimo},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+
+
+\title{Cluster Robust Variance Estimation}
+\author{Edoardo Di Cosimo}
+\date{}
+
+\begin{document}
+\frame{\titlepage}
+
+
+\begin{frame}{Introduction}
+\phantomsection\label{introduction}
+\begin{itemize}
+\item
+  The variance of the sum of 2 random variables \(X_{1}\) and \(X_{2}\)
+  is: \[
+  \text{Var}(X_{1})+\text{Var}(X_{2})+
+  2\cdot
+  \underbrace{\text{cov}(X_{1},X_{2})}_{=0\ \text{if } X_1 \perp X_2}
+  \]
+\item
+  The OLS estimator can be written as the true parameter plus a sample
+  (weighted) average of individual scores \[
+  \hat{\beta}_\text{ols} = \beta + \frac{\sum_{i}X_{i}u_{i}}{\sum _{i}X_{i}^{2}}
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asymptotic}
+\phantomsection\label{asymptotic}
+\begin{itemize}
+\tightlist
+\item
+  To conduct hypothesis tests we need the asymptotic distribution of our
+  estimators
+\item
+  I.e. we need to understand how the estimator would behave under
+  repeated sampling. \[
+  \sqrt{ N }\left( \hat{\beta}_\text{ols} - \beta \right) = \frac{\frac{1}{\sqrt{ N }}\sum_{i}X_{i}u_{i}}{\frac{1}{N}\sum _{i}X_{i}^{2}}
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\tightlist
+\item
+  Focus on the numerator \[
+  \frac{1}{\sqrt{ N }}\sum_{i}X_{i}u_{i}
+  \]
+\item
+  This is a sum of \(N\) random varianbles
+\item
+  If they are all independent: \[
+  \xrightarrow{d} \mathcal{N}\left( 0,  \frac{1}{N} \sum_{i}\operatorname{Var}(X_{i}u_{i}) \right)
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Which is the problem?}
+\phantomsection\label{which-is-the-problem}
+\begin{itemize}
+\tightlist
+\item
+  Inside a cluster the scores of 2 individuals are not independent
+\item
+  Usual White Variance estimator is not consistent \[
+  \frac{1}{\sqrt{ N }} \sum_{i=1}^N X_{i}u_{i} \xrightarrow{d} \mathcal{N}\left( 0, \frac{1}{N} \sum_{i=1}^N \text{Var}(X_{i}u_{i}) + \frac{2}{N}\sum_{i \ne}^N\sum_{j}^N \text{cov}(X_{i}u_{i},X_{j}u_{j})\right)
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\section{Literature review}\label{literature-review}
+
+\begin{frame}{Why Cluster?}
+\phantomsection\label{why-cluster}
+\begin{itemize}
+\tightlist
+\item
+  Traditional view: adjust for \textbf{within-cluster error
+  correlation}.\\
+\item
+  Bias in OLS S.E. grows with: strong error correlation, correlated
+  regressors, large clusters.\\
+\item
+  CRVE relies on \textbf{large G} asymptotics.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fixed G}
+\phantomsection\label{fixed-g}
+\begin{itemize}
+\tightlist
+\item
+  Ibragimov and Müller (2010): inference can use \textbf{cluster-level
+  estimates}.\\
+\item
+  If they are (approximately) independent \& Gaussian a \textbf{t-test}
+  with \(t_{G−1}\) is valid even with heterogeneous variances.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Design-Based Argument}
+\phantomsection\label{the-design-based-argument}
+\begin{itemize}
+\tightlist
+\item
+  Clustering matters because of \textbf{sampling or assignment design},
+  not residual correlation.\\
+\item
+  Residual correlation is \textbf{neither necessary nor sufficient}.\\
+\item
+  If neither sampling nor treatment assignment is clustered \textbf{do
+  not cluster}.\\
+\item
+  CRVE is often conservative unless effects are homogeneous or clusters
+  are rarely observed.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{What Are Clustered Data?}
+\phantomsection\label{what-are-clustered-data}
+\begin{itemize}
+\tightlist
+\item
+  Individuals in the same cluster share \textbf{unobserved
+  correlation}.\\
+\item
+  Observations across clusters are identically distributed (mean 0) but
+  \textbf{not independent} within clusters.\\
+\item
+  Knowing one unit's value gives information about another in the same
+  group.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Representation of Clustered Data}
+\phantomsection\label{representation-of-clustered-data}
+\begin{itemize}
+\tightlist
+\item
+  Sample with \(N\) individuals grouped in \(G\) clusters:\\
+  \(X_{ig} = (X_{11},\dots,X_{N_1 1},\; X_{12},\dots,X_{N_2 2},\dots,X_{N_G G})\)\\
+\item
+  For \(i,j\) in the same cluster \(g\):\\
+  \[
+  P(X_i > E[X] \mid X_j > E[X]) > P(X_i > E[X])
+  \]
+\item
+  Cluster \(g\) can be seen as a \textbf{subpopulation}:\\
+  \[
+  X_g = \{X_i: i \in g\}
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\begin{frame}{Clustered Correlation from Heterogeneous Effects}
+\phantomsection\label{clustered-correlation-from-heterogeneous-effects}
+\begin{itemize}
+\tightlist
+\item
+  True model:\\
+  \[
+  Y_{ig} = X_{ig}\beta_g + u_i
+  \]
+\item
+  Estimated model:\\
+  \[
+  Y_{ig} = X_{ig}\beta_{\text{APE}} + e_{ig}
+  \]
+\item
+  Residual:\\
+  \[
+  e_{ig} = X_{ig}(\beta_g - \beta_{\text{APE}}) + u_i
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Heterogeneity-Induced Correlation}
+\phantomsection\label{heterogeneity-induced-correlation}
+\begin{itemize}
+\tightlist
+\item
+  Define cluster deviation:\\
+  \[
+  d_g = \beta_g - \beta_{\text{APE}}
+  \]
+\item
+  Conditional mean of residuals:\\
+  \[
+  E_g[e_{ig}] = X_{ig} d_g
+  \]
+\item
+  Total variance:\\
+  \[
+  \sigma^2_{\text{total}}
+  = \operatorname{Var}(X_{ig}d_g + u_i)
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Within and Between Variance of Residuals}
+\phantomsection\label{within-and-between-variance-of-residuals}
+\begin{itemize}
+\tightlist
+\item
+  Within-cluster variance:\\
+  \[
+  \sigma^2_{\text{within}}
+  = \operatorname{Var}_g(E(e_{ig}\mid g))
+  \]
+\item
+  Between-cluster variance:\\
+  \[
+  \sigma^2_{\text{between}}
+  = \sigma^2_{\text{total}} - \sigma^2_{\text{within}}
+  = \operatorname{Var}(X_{ig}d_g)
+  \]
+\item
+  Hence, \textbf{heterogeneous \(\beta_g\) generates clustered
+  residuals}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Assumptions on the DGP}
+\phantomsection\label{assumptions-on-the-dgp}
+\begin{itemize}
+\tightlist
+\item
+  We must specify how clusters are sampled.\\
+\item
+  Two frameworks: \textbf{fixed number of clusters} vs \textbf{growing
+  number of clusters}.\\
+\item
+  In both cases: two-stage sampling
+
+  \begin{enumerate}
+  \tightlist
+  \item
+    sample clusters\\
+  \item
+    sample individuals within clusters.
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fixed Number of Clusters}
+\phantomsection\label{fixed-number-of-clusters}
+\begin{itemize}
+\tightlist
+\item
+  First stage happens once:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    draw population parameters
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \(\gamma = (\beta_1,\dots,\beta_G)\)\\
+    \item
+      cluster-specific distributions of \(X_g\) and \(u_g\)\\
+    \end{itemize}
+  \item
+    all fixed across samples.\\
+  \end{itemize}
+\item
+  Second stage repeats across samples:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    random draw of individuals \((X_{ig}, u_{ig})\) from each cluster
+    distribution.\\
+  \end{itemize}
+\item
+  \textbf{Only source of randomness} comes from sampling individuals.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Increasing Number of Clusters}
+\phantomsection\label{increasing-number-of-clusters}
+\begin{itemize}
+\tightlist
+\item
+  Both stages are random at every sample:
+
+  \begin{enumerate}
+  \tightlist
+  \item
+    which clusters are drawn\\
+  \item
+    which individuals are drawn inside each cluster\\
+  \end{enumerate}
+\item
+  Two sources of variability: cluster selection and unit-level sampling.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Endogeneity at the Cluster Level}
+\phantomsection\label{endogeneity-at-the-cluster-level}
+\begin{itemize}
+\tightlist
+\item
+  We check whether\\
+  \[
+  \mathbb{E}[X_{ig} c_g] \neq 0
+  \] for some cluster component \(c_g\).\\
+\item
+  OLS requires \textbf{exogeneity}: regressors uncorrelated with
+  errors.\\
+\item
+  This may fail \textbf{within} clusters but hold \textbf{on average
+  across clusters}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Aggregate vs Within-Cluster Exogeneity}
+\phantomsection\label{aggregate-vs-within-cluster-exogeneity}
+\begin{itemize}
+\tightlist
+\item
+  Some clusters may show correlation between \(X_{ig}\) and the
+  cluster-specific error component (Mundlak, 1978).\\
+\item
+  If these correlations cancel out across clusters, pooled OLS remains
+  \textbf{consistent} even with within-cluster endogeneity.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Variance of Cluster-Level Effects}
+\phantomsection\label{variance-of-cluster-level-effects}
+\begin{itemize}
+\tightlist
+\item
+  Assume a population of cluster-specific effects: \[
+  \beta_g \sim \text{ i.i.d. with } 
+  E[\beta_g] = \beta_{\text{APE}},\quad
+  \operatorname{Var}(\beta_g) = \sigma^2_\beta.
+  \]
+\item
+  We draw \(G\) coefficients: \[
+  \boldsymbol{\beta} = (\beta_1,\dots,\beta_G)'.
+  \]
+\item
+  Then \[
+  E[\boldsymbol{\beta}] = 
+  \begin{bmatrix}
+  \beta_{\text{APE}} \\
+  \vdots \\
+  \beta_{\text{APE}}
+  \end{bmatrix},\quad
+  \operatorname{Cov}(\boldsymbol{\beta}) =
+  \sigma^2_\beta I_G.
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asymptotics in the Number of Clusters}
+\phantomsection\label{asymptotics-in-the-number-of-clusters}
+\begin{itemize}
+\tightlist
+\item
+  Sample mean of the cluster effects: \[
+  \bar{\beta} = \frac{1}{G}\sum_{g=1}^G \beta_g
+  \xrightarrow{p} \beta_{\text{APE}}
+  \]
+\item
+  Central Limit Theorem: \[
+  \frac{1}{\sqrt{G}} \sum_{g=1}^G (\beta_g - \beta_{\text{APE}})
+  \xrightarrow{d} \mathcal{N}(0,\sigma^2_\beta).
+  \]
+\item
+  If all \(\beta_g\) were observed, we could estimate \(\sigma^2_\beta\)
+  via: \[
+  \hat{\sigma}^2_\beta
+  = \frac{G}{G-1} \sum_{g=1}^G (\beta_g - \bar{\beta})^2.
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Monte Carlo: Estimating \(\sigma^2_\beta\)}
+\phantomsection\label{monte-carlo-estimating-sigma2_beta}
+\begin{itemize}
+\tightlist
+\item
+  Monte Carlo design:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Fix \(G\) and the distribution of \(\beta_g\).
+  \item
+    Repeat many draws of \((\beta_1,\dots,\beta_G)\).
+  \item
+    Compare:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      empirical variance of \(\bar{\beta}\) across repetitions;
+    \item
+      plug-in estimate \(\hat{\sigma}^2_\beta\) from a single draw.
+    \end{itemize}
+  \end{itemize}
+\item
+  The resulting plot shows how the \textbf{estimation error}\\
+  \(\hat{\sigma}^2_\beta - \operatorname{Var}(\bar{\beta})\) shrinks as
+  \(G\) increases.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{From True \(\beta_g\) to Estimated \(\hat{\beta}_g\)}
+\phantomsection\label{from-true-beta_g-to-estimated-hatbeta_g}
+\begin{itemize}
+\tightlist
+\item
+  In practice, \(\beta_g\) is not observed; we estimate it from data.\\
+\item
+  For each cluster \(g\): \[
+  \sqrt{N_g}\,(\hat{\beta}_g - \beta_g)
+  \xrightarrow{d}
+  \mathcal{N}(0, V_g),
+  \] where \[
+  V_g = (X_g'X_g)^{-1} E_g[X_g' u_g u_g' X_g] (X_g'X_g)^{-1}.
+  \]
+\item
+  Across clusters we thus have \(G\) asymptotically normal estimators,\\
+  each centered at its own \(\beta_g\) with cluster-specific variance
+  \(V_g\).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Interpretation: Signal + Noise}
+\phantomsection\label{interpretation-signal-noise}
+\begin{itemize}
+\tightlist
+\item
+  Write each estimator as \[
+  \hat{\beta}_g = \beta_g + e_g,
+  \] with \[
+  \sqrt{N_g}\, e_g \xrightarrow{d} \mathcal{N}(0, V_g),\quad E[e_g]=0.
+  \]
+\item
+  The vector \(\hat{\boldsymbol{\beta}}\) can be viewed as \textbf{noisy
+  observations}\\
+  of the underlying cluster parameters, with noise coming from
+  within-cluster sampling.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Monte Carlo: Cluster-Wise Estimation}
+\phantomsection\label{monte-carlo-cluster-wise-estimation}
+\begin{itemize}
+\tightlist
+\item
+  Using a fixed vector of true parameters \(\{\beta_g\}_{g=1}^G\), we:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    build a population with \(G\) clusters;
+  \item
+    repeatedly resample individuals within each cluster;
+  \item
+    re-estimate \(\hat{\beta}_g\) in each replication.
+  \end{itemize}
+\item
+  For each cluster \(g\) we obtain a Monte Carlo distribution of
+  \(\hat{\beta}_g\):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    histogram of \(\hat{\beta}_g\),
+  \item
+    vertical line at the true \(\beta_g\).
+  \end{itemize}
+\item
+  This visualizes \(\hat{\beta}_g = \beta_g + e_g\)\\
+  and shows how dispersion differs across clusters.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Decomposition Around \(\beta_{\text{APE}}\)}
+\phantomsection\label{decomposition-around-beta_textape}
+\begin{itemize}
+\tightlist
+\item
+  Model the true effects as \[
+  \beta_g = \beta_{\text{APE}} + d_g,\quad
+  d_g \sim \text{i.i.d. } \mathcal{N}(0,\sigma^2_\beta).
+  \]
+\item
+  Then \[
+  \hat{\beta}_g = \beta_{\text{APE}} + d_g + e_g.
+  \]
+\item
+  The cluster mean equals the pooled OLS estimator: \[
+  \hat{\beta}_{\text{pols}}
+  = \frac{1}{G}\sum_{g=1}^G \hat{\beta}_g
+  = \beta_{\text{APE}}
+    + \frac{1}{G}\sum_{g=1}^G d_g
+    + \frac{1}{G}\sum_{g=1}^G e_g.
+  \]
+\item
+  As \(G \to \infty\), both averages of \(d_g\) and \(e_g\) converge to
+  zero in probability.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{White Variance at the Cluster Level}
+\phantomsection\label{white-variance-at-the-cluster-level}
+\begin{itemize}
+\tightlist
+\item
+  For each cluster \(g\), we estimate \(V_g\) using the \textbf{White}
+  heteroskedasticity-robust estimator.\\
+\item
+  Monte Carlo check:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    compute the White variance of \(\hat{\beta}_g\);
+  \item
+    compare it with the Monte Carlo variance of \(\hat{\beta}_g\)
+    (across resamples);
+  \item
+    look at the histogram of ``White variance -- Monte Carlo variance''.
+  \end{itemize}
+\item
+  The small average discrepancy across clusters supports the
+  \textbf{consistency of White} for \(V_g\).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pooled OLS and Averaging Cluster Variances}
+\phantomsection\label{pooled-ols-and-averaging-cluster-variances}
+\begin{itemize}
+\tightlist
+\item
+  White on the pooled regression can be related to averaging
+  cluster-level variances:\\
+  \[
+  \widehat{\operatorname{Var}}(\hat{\beta})
+  \;\approx\;
+  \frac{1}{G}
+  \left(
+    \frac{1}{G}\sum_{g=1}^G \widehat{\operatorname{Var}}(\hat{\beta}_g)
+  \right),
+  \] echoing the Fama--MacBeth idea of averaging across groups.\\
+\item
+  This interpretation is valid when there is effectively
+  \textbf{one-stage sampling}:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    the set of clusters is fixed,
+  \item
+    randomness comes only from within-cluster sampling.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{What the Simulations Show}
+\phantomsection\label{what-the-simulations-show}
+\begin{itemize}
+\tightlist
+\item
+  \begin{enumerate}
+  [(i)]
+  \tightlist
+  \item
+    The asymptotic variance of each \(\hat{\beta}_g\) can be
+    consistently estimated using\\
+    the cluster-level White estimator.\\
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  [(i)]
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    The pooled White variance behaves like an aggregation of the
+    cluster-specific White variances.\\
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  [(i)]
+  \setcounter{enumi}{2}
+  \tightlist
+  \item
+    Once \textbf{resampling of clusters} is introduced, the variance of
+    \(\hat{\beta}_{\text{pols}}\)\\
+    no longer equals the simple average of
+    \(\widehat{\operatorname{Var}}(\hat{\beta}_g)\).
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Decomposing Variation in \(\hat{\beta}_g\)}
+\phantomsection\label{decomposing-variation-in-hatbeta_g}
+\begin{itemize}
+\tightlist
+\item
+  We want to separate two components:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{within-cluster estimation error}:
+    \(e_g = \hat{\beta}_g - \beta_g\)
+  \item
+    \textbf{between-cluster heterogeneity}:
+    \(d_g = \beta_g - \beta_{\text{APE}}\)
+  \end{itemize}
+\item
+  Two simulation exercises make this decomposition explicit.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exercise 1: Within-Cluster Sampling Error \(e_g\)}
+\phantomsection\label{exercise-1-within-cluster-sampling-error-e_g}
+\begin{itemize}
+\tightlist
+\item
+  For several cluster sizes \(N_g \in \{10,100,200,300,1000\}\):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    repeatedly resample \(N_g\) individuals per cluster,
+  \item
+    re-estimate all \(\hat{\beta}_g\),
+  \item
+    compute estimation errors \(e_g = \hat{\beta}_g - \beta_g\).
+  \end{itemize}
+\item
+  For each \(N_g\), compute \[
+  \mathbb{E}[\operatorname{Var}(e_g)]
+  \] by averaging variances across clusters and repetitions.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: Decay of \(e_g\) Variance}
+\phantomsection\label{results-decay-of-e_g-variance}
+\begin{itemize}
+\tightlist
+\item
+  The variance of \(e_g\) falls rapidly as \(N_g\) increases.\\
+\item
+  Larger clusters → more precise cluster-specific estimates.\\
+\item
+  Sampling noise becomes negligible for large \(N_g\).\\
+\item
+  (Figure: Decay of within-cluster sampling error.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exercise 2: Between-Cluster Heterogeneity \(d_g\)}
+\phantomsection\label{exercise-2-between-cluster-heterogeneity-d_g}
+\begin{itemize}
+\tightlist
+\item
+  Repeatedly draw new sets of \(\beta_g\) from the population
+  distribution.\\
+\item
+  Compute deviations: \[
+  d_g = \beta_g - \beta_{\text{APE}}.
+  \]
+\item
+  Record the mean deviation \(\overline{d}_g\) for each repetition.\\
+\item
+  The variance of these means estimates \textbf{heterogeneity-driven
+  dispersion}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: Nature of \(d_g\)}
+\phantomsection\label{results-nature-of-d_g}
+\begin{itemize}
+\tightlist
+\item
+  Variation in \(d_g\) reflects \textbf{structural differences}, not
+  sampling noise.\\
+\item
+  This dispersion does not shrink with \(N_g\).\\
+\item
+  Heterogeneity persists regardless of within-cluster sample size.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Varying the Number of Clusters \(G\)}
+\phantomsection\label{varying-the-number-of-clusters-g}
+\begin{itemize}
+\tightlist
+\item
+  Repeat the heterogeneity experiment for different \(G\).\\
+\item
+  For each \(G\), draw many sets of \(\beta_g\), compute \(d_g\), and
+  record: \[
+  \operatorname{Var}(\overline{d}_g).
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: Shrinkage of
+\(\operatorname{Var}(\overline{d}_g)\)}
+\phantomsection\label{results-shrinkage-of-operatornamevaroverlined_g}
+\begin{itemize}
+\tightlist
+\item
+  As \(G\) increases,\\
+  \[
+  \operatorname{Var}(\overline{d}_g)
+  \] declines.\\
+\item
+  Averaging over more clusters stabilizes the estimate of the underlying
+  mean parameter.\\
+\item
+  (Figure: variance of mean deviations vs number of clusters.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Monte Carlo Decomposition of
+\(\operatorname{Var}(\hat{\beta}_{\text{ols}})\)}
+\phantomsection\label{monte-carlo-decomposition-of-operatornamevarhatbeta_textols}
+\begin{itemize}
+\tightlist
+\item
+  Goal: assess how well \[
+  \operatorname{Var}(\hat{\beta}_{\text{ols}})
+  \approx
+  \operatorname{Var}(d_g)
+  +
+  \mathbb{E}\!\left[ \operatorname{Var}(e_g) \right]
+  \] holds in finite samples.
+\item
+  Two components:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \(d_g = \beta_g - \beta_{\text{APE}}\) (heterogeneity)
+  \item
+    \(e_g = \hat{\beta}_g - \beta_g\) (sampling error)
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simulation Design}
+\phantomsection\label{simulation-design}
+\begin{itemize}
+\tightlist
+\item
+  Grid of designs:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    cluster sizes \(N_g \in \{20, 50, 100, 200, 300\}\)\\
+  \item
+    numbers of clusters \(G \in \{5, 10, 20, 50, 100\}\).
+  \end{itemize}
+\item
+  For each \((N_g, G)\) and each repetition:
+
+  \begin{enumerate}
+  \tightlist
+  \item
+    Draw heterogeneous coefficients \(\beta_g\).
+  \item
+    Generate a population with \(G\) clusters.
+  \item
+    Sample \(N_g\) individuals from each cluster.
+  \item
+    Estimate all \(\hat{\beta}_g\) and pooled
+    \(\hat{\beta}_{\text{ols}}\).
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recorded Quantities}
+\phantomsection\label{recorded-quantities}
+\begin{itemize}
+\tightlist
+\item
+  For every repetition and design \((N_g,G)\):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \(e_g = \hat{\beta}_g - \beta_g\) (estimation errors)
+  \item
+    \(d_g = \beta_g - \beta_{\text{APE}}\) (heterogeneity terms)
+  \item
+    \(\hat{\beta}_{\text{ols}}\) (pooled estimator)
+  \item
+    White and CRVE variance estimates of \(\hat{\beta}_{\text{ols}}\).
+  \end{itemize}
+\item
+  For each \((N_g,G)\) we compute:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \(\operatorname{Var}(\hat{\beta}_{\text{ols}})\) (empirical
+    variance)
+  \item
+    \(\operatorname{Var}(d_g)\) and
+    \(\mathbb{E}[\operatorname{Var}(e_g)]\)
+  \item
+    relative discrepancy between left- and right-hand side.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Performance of the Decomposition}
+\phantomsection\label{performance-of-the-decomposition}
+\begin{itemize}
+\tightlist
+\item
+  When either \(G\) or \(N_g\) is large:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \(d_g\) and \(e_g\) are measured very precisely.
+  \item
+    \(\operatorname{Var}(d_g) + \mathbb{E}[\operatorname{Var}(e_g)]\)\\
+    closely matches \(\operatorname{Var}(\hat{\beta}_{\text{ols}})\).
+  \end{itemize}
+\item
+  When both \(G\) and \(N_g\) are small:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    cluster-level estimates are noisy;
+  \item
+    between-cluster dispersion is overstated;
+  \item
+    the decomposition is a poorer approximation.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Relative Error Across Designs}
+\phantomsection\label{relative-error-across-designs}
+\begin{itemize}
+\tightlist
+\item
+  The plot of the relative error over \((N_g,G)\) shows:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    largest discrepancies when both \(G\) and \(N_g\) are small;
+  \item
+    the mismatch rapidly shrinks as we increase either
+
+    \begin{itemize}
+    \tightlist
+    \item
+      the number of clusters, or
+    \item
+      the cluster size.
+    \end{itemize}
+  \end{itemize}
+\item
+  Conclusion: the variance decomposition is \textbf{very accurate} in
+  rich designs (many clusters and/or large cluster sizes), but less so
+  in sparse settings.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{CRVE--White Differences as Heterogeneity Measure}
+\phantomsection\label{crvewhite-differences-as-heterogeneity-measure}
+\begin{itemize}
+\tightlist
+\item
+  We test whether the \textbf{difference} between CRVE and White
+  variance estimators\\
+  captures the heterogeneity component \[
+  \operatorname{Var}(\bar d_g),\quad
+  d_g = \beta_g - \beta_{\text{APE}}.
+  \]
+\item
+  For each design \((N_g, G)\):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    compute average CRVE variance,
+  \item
+    compute average White variance,
+  \item
+    take their difference,
+  \item
+    compare it to \(\operatorname{Var}(\bar d_g)\) from the simulations.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simulation-Based Comparison}
+\phantomsection\label{simulation-based-comparison}
+\begin{itemize}
+\tightlist
+\item
+  For every \((N_g, G)\):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    horizontal axis: \(\operatorname{Var}(\bar d_g)\) (variance of mean
+    deviations),
+  \item
+    vertical axis: \[
+    \mathbb{E}\big[\widehat{\operatorname{Var}}_{\text{CRVE}}\big]
+    -
+    \mathbb{E}\big[\widehat{\operatorname{Var}}_{\text{White}}\big].
+    \]
+  \end{itemize}
+\item
+  Each point is a design \((N_g,G)\):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    color intensity encodes \(G\) (lighter = larger \(G\)).
+  \end{itemize}
+\item
+  The 45-degree dashed line is the \textbf{benchmark} of perfect
+  equality.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: Tight Alignment}
+\phantomsection\label{results-tight-alignment}
+\begin{itemize}
+\tightlist
+\item
+  Points lie very close to the 45-degree line:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    CRVE--White differences almost exactly recover
+    \(\operatorname{Var}(\bar d_g)\).
+  \end{itemize}
+\item
+  Designs with \textbf{large \(G\)} (lighter points):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    sit nearly on the identity line,
+  \item
+    indicate very precise estimation of the heterogeneity component.
+  \end{itemize}
+\item
+  Designs with \textbf{small \(G\)}:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    show slightly more dispersion,
+  \item
+    but still follow the same linear relationship.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Interpretation}
+\phantomsection\label{interpretation}
+\begin{itemize}
+\tightlist
+\item
+  The gap between CRVE and White is driven by \textbf{between-cluster
+  variation},\\
+  not by sampling noise.
+\item
+  Overall, the simulations support: \[
+  \mathbb{E}\big[\widehat{\operatorname{Var}}_{\text{CRVE}}\big]
+  -
+  \mathbb{E}\big[\widehat{\operatorname{Var}}_{\text{White}}\big]
+  \approx
+  \operatorname{Var}(\bar d_g),
+  \] and this relationship strengthens as the number of clusters \(G\)
+  grows.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Clustered-Robust Variance Estimator (CRVE)}
+\phantomsection\label{clustered-robust-variance-estimator-crve}
+\begin{itemize}
+\tightlist
+\item
+  Units: \(i=1,\dots,N_g\) within clusters \(g=1,\dots,G\).\\
+\item
+  Each observation has regressors: \[
+  X_{ig} = (x_{1ig},\dots,x_{kig}).
+  \]
+\item
+  Cluster regressor matrix: \[
+  X_g =
+  \begin{bmatrix}
+  X_{1g}\\\vdots\\X_{N_g g}
+  \end{bmatrix}
+  \ \ (N_g\times k)
+  \]
+\item
+  Full sample: \[
+  X =
+  \begin{bmatrix}
+  X_1\\\vdots\\X_G
+  \end{bmatrix}
+  \ \ (N\times k),\quad N=\sum_g N_g.
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why Cluster-Robust Inference?}
+\phantomsection\label{why-cluster-robust-inference}
+\begin{itemize}
+\tightlist
+\item
+  Dependence is allowed \textbf{within} clusters.\\
+\item
+  Clusters are assumed \textbf{independent across \(g\)}.\\
+\item
+  Asymptotics rely on \textbf{\(G\to\infty\)}, not on total sample size
+  \(N\).
+\item
+  Following Ibragimov and Müller (2010): consistency comes from
+  averaging over many essentially independent groups.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Consistency of OLS Under Clustering}
+\phantomsection\label{consistency-of-ols-under-clustering}
+\begin{itemize}
+\tightlist
+\item
+  OLS: \[
+  \hat\beta_{\text{ols}} = (X'X)^{-1} X'y
+  = \left(\sum_g X_g'X_g\right)^{-1}\!\left(\sum_g X_g'y_g\right)
+  \]
+\item
+  Error representation: \[
+  \hat\beta - \beta
+  =
+  \left(\tfrac1G\sum_g X_g'X_g\right)^{-1}
+  \left(\tfrac1G\sum_g X_g'u_g\right)
+  \]
+\item
+  If\\
+  \[
+  E[X_g' u_g] = 0
+  \] then by WLLN: \[
+  \tfrac1G\sum_g X_g'u_g \xrightarrow{p}0
+  \] so \(\hat\beta_{\text{ols}}\) is consistent.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asymptotic Distribution of OLS}
+\phantomsection\label{asymptotic-distribution-of-ols}
+\begin{itemize}
+\tightlist
+\item
+  Scaling: \[
+  \sqrt{G}(\hat\beta-\beta)
+  =
+  \left(\tfrac1G\sum_g X_g'X_g\right)^{-1}
+  \left(\tfrac{1}{\sqrt{G}}\sum_g X_g'u_g\right)
+  \]
+\item
+  First term \(\to A^{-1}\).\\
+\item
+  Second term is asymptotically normal: \[
+  \tfrac1{\sqrt G}\sum_g X_g'u_g
+  \overset{a}{\sim}
+  \mathcal{N}\bigl(0,\,E[X_g' u_g u_g' X_g]\bigr)
+  \]
+\item
+  Therefore: \[
+  \sqrt{G}(\hat\beta-\beta)
+  \xrightarrow{d}
+  \mathcal{N}\!\left(0,\; A^{-1} E[X_g'u_g u_g'X_g] A^{-1}\right)
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{CRVE: General Formula}
+\phantomsection\label{crve-general-formula}
+\begin{itemize}
+\tightlist
+\item
+  Cluster-robust variance matrix: \[
+  \hat V_{\text{clu}}(\hat\beta)
+  =
+  (X'X)^{-1}
+  \left(\sum_{g=1}^G X_g'\hat u_g \hat u_g' X_g\right)
+  (X'X)^{-1}
+  \]
+\item
+  Key object: \[
+  s_g = X_g'\hat u_g
+  \] so that\\
+  \[
+  s_g s_g' = X_g' \hat u_g \hat u_g' X_g.
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cluster-Level Contribution}
+\phantomsection\label{cluster-level-contribution}
+\begin{itemize}
+\tightlist
+\item
+  For a cluster: \[
+  s_g s_g'
+  =
+  \bigl[\sum_{i,j\in g} x_{aig}x_{bjg}\,\hat u_{ig}\hat u_{jg}\bigr]_{a,b=1}^k
+  \]
+\item
+  Summing over \(g\) gives the full middle matrix: \[
+  \hat B = \sum_g s_g s_g'.
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Convergence of CRVE}
+\phantomsection\label{convergence-of-crve}
+\begin{itemize}
+\tightlist
+\item
+  Start with: \[
+  \tfrac1G \sum_g X_g'\hat u_g \hat u_g' X_g
+  \]
+\item
+  Replace \(\hat u_g = y_g - X_g\hat\beta\) and expand.\\
+\item
+  Terms involving \(\beta-\hat\beta\) vanish as \(\hat\beta\to\beta\).\\
+\item
+  Thus: \[
+  \tfrac1G\sum_g X_g'\hat u_g\hat u_g'X_g
+  \xrightarrow{p}
+  \tfrac1G\sum_g X_g'u_g u_g' X_g
+  \xrightarrow{p}
+  E[X_g'u_g u_g'X_g]
+  \]
+\item
+  Hence CRVE converges to the asymptotic variance of OLS.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{CRVE vs White: Selector Matrix View}
+\phantomsection\label{crve-vs-white-selector-matrix-view}
+\begin{itemize}
+\tightlist
+\item
+  Start from: \[
+  \hat S\hat S' = X'\hat u \hat u' X.
+  \]
+\item
+  \textbf{White} keeps only diagonal elements (\(i=j\)): \[
+  B_W = \operatorname{diag}(\hat u_1^2,\dots,\hat u_N^2).
+  \]
+\item
+  \textbf{CRVE} keeps all \((i,j)\) pairs \textbf{within the same
+  cluster}, zeroing cross-cluster terms.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example: One Cluster of Three Observations}
+\phantomsection\label{example-one-cluster-of-three-observations}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{White}: \[
+  B_W =
+  \begin{bmatrix}
+  \hat u_1^2 & 0 & 0\\
+  0 & \hat u_2^2 & 0\\
+  0 & 0 & \hat u_3^2
+  \end{bmatrix}
+  \]
+\item
+  \textbf{CRVE}: \[
+  B_C =
+  \begin{bmatrix}
+  \hat u_1^2 & \hat u_1\hat u_2 & \hat u_1\hat u_3\\
+  \hat u_1\hat u_2 & \hat u_2^2 & \hat u_2\hat u_3\\
+  \hat u_1\hat u_3 & \hat u_2\hat u_3 & \hat u_3^2
+  \end{bmatrix}
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Contribution to the Variance Estimator}
+\phantomsection\label{contribution-to-the-variance-estimator}
+\begin{itemize}
+\tightlist
+\item
+  After multiplying by \(X_g\): \[
+  X_g' B_W X_g
+  = \sum_{i\in g} x_i^2\hat u_i^2
+  \]
+\item
+  CRVE adds all extra within-cluster covariances: \[
+  X_g' B_C X_g
+  =
+  X_g' B_W X_g 
+  +
+  2\!\sum_{i<j\in g} x_i x_j\,\hat u_i\hat u_j.
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Key Difference}
+\phantomsection\label{key-difference}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{White} ignores intra-cluster dependence.\\
+\item
+  \textbf{CRVE} adds all within-cluster cross-products: \[
+  x_i x_j\,\hat u_i\hat u_j.
+  \]
+\item
+  These extra terms adjust the variance for correlated errors inside
+  clusters.\\
+\item
+  This is the exact mechanism through which CRVE corrects inference when
+  within-cluster dependence is present.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Main Findings}
+\phantomsection\label{main-findings}
+\begin{itemize}
+\tightlist
+\item
+  The thesis combines theory and simulation to study cluster-robust
+  variance estimation.\\
+\item
+  Simulations clarify when clustering matters, how pooled OLS behaves
+  under heterogeneous effects, and when White or CRVE should be used.\\
+\item
+  Results offer a unified view of clustered sampling, estimator
+  consistency, and variance behavior.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Consistency of Cluster-Specific Estimators}
+\phantomsection\label{consistency-of-cluster-specific-estimators}
+\begin{itemize}
+\tightlist
+\item
+  With no cluster-level endogeneity:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    each \(\hat{\beta}_g\) is consistent for its \(\beta_g\);\\
+  \item
+    including cluster intercepts absorbs within-cluster dependence;\\
+  \item
+    White provides accurate variance estimates at the cluster level.
+  \end{itemize}
+\item
+  The average partial effect\\
+  \[
+  \beta_{\text{APE}}
+  \] is consistently estimated by averaging \(\hat{\beta}_g\) when all
+  clusters are observed.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cluster-Level Endogeneity and Pooled OLS}
+\phantomsection\label{cluster-level-endogeneity-and-pooled-ols}
+\begin{itemize}
+\tightlist
+\item
+  Regressors may correlate with shocks \textbf{within} some clusters.\\
+\item
+  Exogeneity may still hold \textbf{on average across clusters},
+  preserving consistency of pooled OLS.
+\item
+  Variance of \(\hat{\beta}_{\text{ols}}\) reflects:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    between-cluster heterogeneity: \(d_g\),\\
+  \item
+    within-cluster sampling error: \(e_g\).
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Variance Decomposition}
+\phantomsection\label{variance-decomposition}
+\begin{itemize}
+\tightlist
+\item
+  Supported strongly by simulations: \[
+  \mathrm{Var}(\hat{\beta}_{\text{ols}})
+  \approx
+  \mathrm{Var}(d_g) + \mathbb{E}[\mathrm{Var}(e_g)].
+  \]
+\item
+  Works extremely well when:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \(G\) is large, \textbf{or}
+  \item
+    \(N_g\) is large.
+  \end{itemize}
+\item
+  Breaks down only in small designs (few clusters \& small cluster
+  sizes).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{White vs CRVE}
+\phantomsection\label{white-vs-crve}
+\begin{itemize}
+\tightlist
+\item
+  When there is no between-cluster heterogeneity:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    CRVE = White.
+  \end{itemize}
+\item
+  With heterogeneity:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    CRVE exceeds White by ≈ \(\operatorname{Var}(d_g)\).
+  \item
+    The CRVE--White gap is informative about the magnitude of \(d_g\).
+  \end{itemize}
+\item
+  But:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    CRVE is \textbf{not} a generic robustness tool.
+  \item
+    If clustering is not implied by sampling/assignment, CRVE becomes
+    conservative and misestimates the true variance.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Final Takeaways}
+\phantomsection\label{final-takeaways}
+\begin{enumerate}
+\tightlist
+\item
+  \textbf{Heterogeneous treatment effects} do not threaten consistency
+  of pooled OLS under population exogeneity.\\
+\item
+  \textbf{Cluster variance decomposes naturally} into \(d_g\)
+  (heterogeneity) and \(e_g\) (sampling noise), with simulations closely
+  matching theory.\\
+\item
+  \textbf{CRVE is valid only when justified by the DGP}---not simply by
+  observing correlated residuals.
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Theory + simulation together show when cluster-robust inference is
+  appropriate, informative, and reliable.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-ibragimov2010t}
+Ibragimov, Rustam, and Ulrich K Müller. 2010. {``T-Statistic Based
+Correlation and Heterogeneity Robust Inference.''} \emph{Journal of
+Business \& Economic Statistics} 28 (4): 453--68.
+
+\end{CSLReferences}
+\end{frame}
+
+
+
+
+\end{document}
