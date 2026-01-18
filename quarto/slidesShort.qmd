@@ -83,22 +83,6 @@ $$
   $$
   e_{ig} = X_{ig}(\beta_g - \beta_{\text{APE}}) + u_i
   $$
-
----
-
-## Heterogeneity-Induced Correlation
-
-- Define cluster deviation:  
-  $$
-  d_g = \beta_g - \beta_{\text{APE}}
-  $$
-
-- Between-cluster variance:  
-  $$
-  \sigma^2_{\text{between}}
-  = \sigma^2_{\text{total}} - \sigma^2_{\text{within}}
-  = \operatorname{Var}(X_{ig}d_g)
-  $$
 - Hence, **heterogeneous $\beta_g$ generates clustered residuals**.
 
 ---
@@ -226,29 +210,6 @@ $$
 
 ---
 
-## Decomposition of $\hat{\beta}_g$
-
-- Variation in $\hat{\beta}_g$ splits into:
-  - **sampling error**: $e_g = \hat{\beta}_g - \beta_g$
-  - **heterogeneity**: $d_g = \beta_g - \beta_{\text{APE}}$
-- Simulations show:
-  - $\mathbb{E}[\mathrm{Var}(e_g)]$ decreases quickly as $N_g$ grows → large clusters yield precise $\hat{\beta}_g$.
-  - $\mathrm{Var}(d_g)$ reflects true structural differences → does **not** shrink with $N_g$.
-- Thus: sampling noise vanishes with large clusters, heterogeneity does not.
-
----
-
-## Behavior Across Cluster Sizes and Numbers
-
-- Varying $N_g$: within-cluster error $e_g$ declines, confirming improved precision.
-- Varying $G$:  
-  $$
-  \mathrm{Var}(\overline{d}_g)
-  $$
-  shrinks as more clusters are included → averaging many clusters recovers the mean effect reliably.
-- Structural heterogeneity persists, but becomes easier to estimate as $G$ grows.
-
-
 ## Monte Carlo Decomposition of $\operatorname{Var}(\hat{\beta}_{\text{ols}})$
 
 - Goal: assess how well
@@ -268,10 +229,9 @@ $$
 
 ## Simulation Design
 
-- Grid of designs:
-  - cluster sizes $N_g \in \{20, 50, 100, 200, 300\}$  
-  - numbers of clusters $G \in \{5, 10, 20, 50, 100\}$.
-- For each $(N_g, G)$ and each repetition:
+- Loop over different **numbers of clusters** $G$ and **cluster sizes** $N_g$.
+- For each $(G, N_g)$, run **1000 Monte Carlo replications**.
+- For each replication:
   1. Draw heterogeneous coefficients $\beta_g$.
   2. Generate a population with $G$ clusters.
   3. Sample $N_g$ individuals from each cluster.
@@ -289,7 +249,7 @@ $$
 - For each $(N_g,G)$ we compute:
   - $\operatorname{Var}(\hat{\beta}_{\text{ols}})$ (empirical variance)
   - $\operatorname{Var}(d_g)$ and $\mathbb{E}[\operatorname{Var}(e_g)]$
-  - relative discrepancy between left- and right-hand side.
+  - relative discrepancy.
 
 ---
 
@@ -306,15 +266,7 @@ $$
 
 ---
 
-## Relative Error Across Designs
-
-- The plot of the relative error over $(N_g,G)$ shows:
-  - largest discrepancies when both $G$ and $N_g$ are small;
-  - the mismatch rapidly shrinks as we increase either
-    - the number of clusters, or
-    - the cluster size.
-- Conclusion: the variance decomposition is **very accurate** in rich designs
-  (many clusters and/or large cluster sizes), but less so in sparse settings.
+![](assets/decompositionOfBetaOLS.pdf){fig-align="center" width=100%}
 
 ---
 
@@ -348,25 +300,17 @@ $$
   - color intensity encodes $G$ (lighter = larger $G$).
 - The 45-degree dashed line is the **benchmark** of perfect equality.
 
+
 ---
 
-## Results: Tight Alignment
+![](assets/dgEqualsDiff.pdf){fig-align="center" width=100%}
+
+---
+
+## Results and Interpretation
 
 - Points lie very close to the 45-degree line:
   - CRVE–White differences almost exactly recover $\operatorname{Var}(\bar d_g)$.
-- Designs with **large $G$** (lighter points):
-  - sit nearly on the identity line,
-  - indicate very precise estimation of the heterogeneity component.
-- Designs with **small $G$**:
-  - show slightly more dispersion,
-  - but still follow the same linear relationship.
-
----
-
-## Interpretation
-
-- The gap between CRVE and White is driven by **between-cluster variation**,  
-  not by sampling noise.
 - Overall, the simulations support:
   $$
   \mathbb{E}\big[\widehat{\operatorname{Var}}_{\text{CRVE}}\big]
